@@ -22,7 +22,7 @@
     </modules>
 
     <properties>
-        <apzda.config.version>1.0.3</apzda.config.version>
+        <apzda.config.version>1.0.4</apzda.config.version>
     </properties>
 
     <issueManagement>
