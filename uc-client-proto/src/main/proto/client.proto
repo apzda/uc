@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package apzda.uc;
+
+import "gsvc/ext.proto";
+import "buf/validate/validate.proto";
+
+option java_package = "com.apzda.cloud.uc.client";
+option java_multiple_files = true;
+option java_outer_classname = "ClientProto";
+
+enum MetaValueType {
+  STRING = 0;
+  INTEGER = 1;
+  LONG = 2;
+  DOUBLE = 3;
+  FLOAT = 4;
+}
+
+message UserMeta {
+  string name = 1;
+  string value = 2;
+  MetaValueType type = 3;
+}
+
+message UserInfo {
+  int32 err_code = 1;
+  optional string err_msg = 2;
+  string uid = 3;
+  string username = 4 ;
+  bool account_non_expired = 5;
+  bool account_non_locked = 6;
+  bool credentials_non_expired = 7;
+  bool enabled = 8;
+  repeated string authorities = 9;
+  repeated UserMeta meta = 100;
+}
+
+message Request {
+  string username = 1 [(buf.validate.field).required = true];
+}
+
+service AccountService {
+  rpc getUserInfo(Request) returns (UserInfo);
+}
