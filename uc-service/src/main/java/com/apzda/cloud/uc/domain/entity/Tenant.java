@@ -17,8 +17,12 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,5 +38,22 @@ import lombok.ToString;
 @Entity
 @Table(name = "uc_tenant")
 public class Tenant extends AuditEntity {
+
+    @Size(max = 64)
+    @NotNull
+    @Column(name = "name", nullable = false, length = 64)
+    private String name;
+
+    @Lob
+    @Column(name = "status")
+    private String status;
+
+    @NotNull
+    @Column(name = "expire_at", nullable = false)
+    private Long expireAt;
+
+    @NotNull
+    @Column(name = "authed_at", nullable = false)
+    private Long authedAt;
 
 }

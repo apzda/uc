@@ -17,8 +17,12 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,12 +39,21 @@ import lombok.ToString;
 @Table(name = "uc_user_oauth_meta")
 public class OauthMeta extends AuditEntity {
 
+    @NotNull
+    @Column(name = "oauth_id", nullable = false)
     private Long oauthId;
 
+    @Size(max = 32)
+    @NotNull
+    @Column(name = "name", nullable = false, length = 32)
     private String name;
 
+    @Lob
+    @Column(name = "value")
     private String value;
 
+    @Size(max = 255)
+    @Column(name = "remark")
     private String remark;
 
 }

@@ -17,8 +17,10 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,10 +37,17 @@ import lombok.ToString;
 @Table(name = "uc_tenant_user")
 public class TenantUser extends AuditEntity {
 
-    private Long uid;
 
+    @NotNull
+    @Column(name = "tenant_id", nullable = false)
     private Long tenantId;
 
-    private Boolean sa;
+    @NotNull
+    @Column(name = "uid", nullable = false)
+    private Long uid;
+
+    @NotNull
+    @Column(name = "sa", nullable = false)
+    private Boolean sa = false;
 
 }

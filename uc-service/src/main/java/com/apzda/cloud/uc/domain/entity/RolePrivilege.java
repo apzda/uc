@@ -17,8 +17,11 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.TenantEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,5 +38,14 @@ import lombok.ToString;
 @Entity
 @Table(name = "uc_role_privilege")
 public class RolePrivilege extends TenantEntity {
+
+    @Size(max = 32)
+    @NotNull
+    @Column(name = "role", nullable = false, length = 32)
+    private String role;
+
+    @NotNull
+    @Column(name = "privilege_id", nullable = false)
+    private Long privilegeId;
 
 }

@@ -17,8 +17,11 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,5 +37,56 @@ import lombok.ToString;
 @Entity
 @Table(name = "uc_user_oauth")
 public class Oauth extends AuditEntity {
+
+    @NotNull
+    @Column(name = "uid", nullable = false)
+    private Long uid;
+
+    @Size(max = 24)
+    @NotNull
+    @Column(name = "provider", nullable = false, length = 24)
+    private String provider;
+
+    @Size(max = 256)
+    @NotNull
+    @Column(name = "open_id", nullable = false, length = 256)
+    private String openId;
+
+    @Size(max = 256)
+    @NotNull
+    @Column(name = "union_id", nullable = false, length = 256)
+    private String unionId;
+
+    @NotNull
+    @Column(name = "login_time", nullable = false)
+    private Long loginTime;
+
+    @Size(max = 24)
+    @NotNull
+    @Column(name = "device", nullable = false, length = 24)
+    private String device;
+
+    @Size(max = 256)
+    @NotNull
+    @Column(name = "ip", nullable = false, length = 256)
+    private String ip;
+
+    @NotNull
+    @Column(name = "last_login_time", nullable = false)
+    private Long lastLoginTime;
+
+    @Size(max = 24)
+    @NotNull
+    @Column(name = "last_device", nullable = false, length = 24)
+    private String lastDevice;
+
+    @Size(max = 256)
+    @NotNull
+    @Column(name = "last_ip", nullable = false, length = 256)
+    private String lastIp;
+
+    @Size(max = 255)
+    @Column(name = "remark")
+    private String remark;
 
 }
