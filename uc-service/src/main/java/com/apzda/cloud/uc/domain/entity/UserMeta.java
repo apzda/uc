@@ -41,6 +41,8 @@ public class UserMeta extends AuditEntity {
 
     public static final String CREDENTIALS_EXPIRED_AT = "credentials_expired_at";
 
+    public static final String EMAIL_ACTIVATED_AT = "email_activated_at";
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private MetaType type;

@@ -35,8 +35,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "uc_user_security")
-public class UserSecurity extends AuditEntity {
+@Table(name = "uc_user_security_qa")
+public class UserSecurityQA extends AuditEntity {
 
     @NotNull
     @Column(name = "uid", nullable = false)

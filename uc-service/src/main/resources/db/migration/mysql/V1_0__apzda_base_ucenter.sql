@@ -116,7 +116,7 @@ CREATE TABLE `uc_user_oauth_session`
     KEY `IDX_UID` (`uid`)
 ) COMMENT ='oauth login sessions';
 
-CREATE TABLE `uc_user_security`
+CREATE TABLE `uc_user_security_qa`
 (
     `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
