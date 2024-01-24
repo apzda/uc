@@ -17,15 +17,15 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import com.apzda.cloud.uc.client.MetaValueType;
+import com.apzda.cloud.uc.domain.vo.MetaType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -39,9 +39,11 @@ import lombok.ToString;
 @Table(name = "uc_user_meta")
 public class UserMeta extends AuditEntity {
 
-    @Lob
+    public static final String CREDENTIALS_EXPIRED_AT = "credentials_expired_at";
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private String type;
+    private MetaType type;
 
     @NotNull
     @Column(name = "uid", nullable = false)
@@ -53,11 +55,24 @@ public class UserMeta extends AuditEntity {
     private String name;
 
     @Lob
-    @Column(name = "value")
+    @Column(name = "value", columnDefinition = "LONGTEXT")
     private String value;
 
-    @Lob
     @Column(name = "remark")
     private String remark;
+
+    public com.apzda.cloud.uc.client.UserMeta convert() {
+        val builder = com.apzda.cloud.uc.client.UserMeta.newBuilder();
+        builder.setName(name);
+        builder.setValue(value);
+        switch (type) {
+            case D -> builder.setType(MetaValueType.DOUBLE);
+            case F -> builder.setType(MetaValueType.FLOAT);
+            case I -> builder.setType(MetaValueType.INTEGER);
+            case L -> builder.setType(MetaValueType.LONG);
+            default -> builder.setType(MetaValueType.STRING);
+        }
+        return builder.build();
+    }
 
 }

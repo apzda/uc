@@ -38,6 +38,12 @@ import lombok.ToString;
 @Table(name = "uc_user_oauth")
 public class Oauth extends AuditEntity {
 
+    public static final String SIMPLE = "simple";
+
+    public static final String PHONE = "phone";
+
+    public static final String EMAIL = "email";
+
     @NotNull
     @Column(name = "uid", nullable = false)
     private Long uid;

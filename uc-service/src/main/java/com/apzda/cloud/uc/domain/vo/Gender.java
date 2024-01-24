@@ -14,24 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.repository;
-
-import com.apzda.cloud.uc.domain.entity.Oauth;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
+package com.apzda.cloud.uc.domain.vo;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-@Repository
-public interface OauthRepository extends CrudRepository<Oauth, Long> {
+public enum Gender {
 
-    @NonNull
-    Optional<Oauth> findByOpenIdAndProvider(@NonNull String openId, @NonNull String provider);
+    MALE, FEMALE, MIX, UNKNOWN;
 
 }

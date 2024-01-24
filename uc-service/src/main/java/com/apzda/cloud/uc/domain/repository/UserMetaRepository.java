@@ -18,7 +18,11 @@ package com.apzda.cloud.uc.domain.repository;
 
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -27,5 +31,11 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface UserMetaRepository extends CrudRepository<UserMeta, Long> {
+
+    @NonNull
+    Optional<UserMeta> getByUidAndName(@NonNull Long uid, @NonNull String name);
+
+    @NonNull
+    List<UserMeta> findAllByUid(@NonNull Long uid);
 
 }

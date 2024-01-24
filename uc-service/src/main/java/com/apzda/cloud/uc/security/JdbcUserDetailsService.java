@@ -17,7 +17,10 @@
 package com.apzda.cloud.uc.security;
 
 import com.apzda.cloud.uc.domain.service.UserManager;
+import com.apzda.cloud.uc.domain.vo.UserStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,7 +37,17 @@ public class JdbcUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        val user = userManager.getUserByUsername(username);
+        val status = user.getStatus();
+
+        return User.withUsername(user.getUsername())
+            .accountLocked(status == UserStatus.LOCKED)
+            .accountExpired(status == UserStatus.EXPIRED)
+            .disabled(!(status == UserStatus.ACTIVATED || status == UserStatus.PENDING))
+            .credentialsExpired(userManager.isCredentialsExpired(user.getId()))
+            .password(user.getPasswd())
+            .authorities("ADMIN")
+            .build();
     }
 
 }

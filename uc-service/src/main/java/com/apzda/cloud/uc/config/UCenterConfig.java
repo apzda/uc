@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -33,7 +34,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class UCenterConfig {
 
     @Bean
-    UserDetailsService userDetailsService(UserManager userManager) {
+    UserDetailsService userDetailsService(UserManager userManager, PasswordEncoder passwordEncoder) {
         return new JdbcUserDetailsService(userManager);
     }
 

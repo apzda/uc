@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2023 Fengz Ning (windywany@gmail.com)
+ * Copyright (C) 2023-2024 Fengz Ning (windywany@gmail.com)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
-import com.apzda.cloud.uc.domain.vo.TenantStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -34,24 +35,21 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "uc_tenant")
-public class Tenant extends AuditEntity {
-
-    @Size(max = 64)
-    @NotNull
-    @Column(name = "name", nullable = false, length = 64)
-    private String name;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private TenantStatus status;
+@Table(name = "uc_user_security")
+public class UserSecurity extends AuditEntity {
 
     @NotNull
-    @Column(name = "expire_at", nullable = false)
-    private Long expireAt;
+    @Column(name = "uid", nullable = false)
+    private Long uid;
 
+    @Size(max = 32)
     @NotNull
-    @Column(name = "authed_at", nullable = false)
-    private Long authedAt;
+    @Column(name = "qid", nullable = false, length = 32)
+    private String qid;
+
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "answer", nullable = false)
+    private String answer;
 
 }

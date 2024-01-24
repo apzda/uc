@@ -19,7 +19,6 @@ package com.apzda.cloud.uc.domain.entity;
 import com.apzda.cloud.gsvc.domain.TenantEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -54,15 +53,12 @@ public class Privilege extends TenantEntity {
     @Column(name = "permission", nullable = false, length = 128)
     private String permission;
 
-    @Lob
     @Column(name = "extra")
     private String extra;
 
-    @Lob
     @Column(name = "description")
     private String description;
 
-    @Lob
     @Column(name = "remark")
     private String remark;
 

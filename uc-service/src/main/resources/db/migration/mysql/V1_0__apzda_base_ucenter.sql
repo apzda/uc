@@ -12,7 +12,7 @@ CREATE TABLE `uc_user`
     `last_name`      VARCHAR(128)     NULL                  DEFAULT NULL COMMENT 'last name',
     `phone_number`   VARCHAR(20)      NULL                  DEFAULT NULL COMMENT 'phone number',
     `phone_prefix`   VARCHAR(10)      NULL                  DEFAULT NULL COMMENT 'international prefix',
-    `email`          VARCHAR(64)      NULL                  DEFAULT NULL COMMENT 'email',
+    `email`          VARCHAR(256)     NULL                  DEFAULT NULL COMMENT 'email',
     `passwd`         VARCHAR(512)     NOT NULL              DEFAULT '' COMMENT 'password',
     `avatar`         VARCHAR(1024)    NULL                  DEFAULT NULL COMMENT 'avatar',
     `gender`         ENUM ('MALE','FEMALE','MIX','UNKNOWN') DEFAULT 'UNKNOWN' COMMENT 'gender',
@@ -98,6 +98,7 @@ CREATE TABLE `uc_user_oauth_session`
     `created_by`    VARCHAR(32)     NULL COMMENT 'Create User Id',
     `updated_at`    BIGINT UNSIGNED NULL     DEFAULT NULL,
     `updated_by`    VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`       BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
     `oauth_id`      BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'oauth id',
     `uid`           BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'user id',
     `grant_code`    VARCHAR(256)    NULL COMMENT 'grant code',
@@ -114,6 +115,36 @@ CREATE TABLE `uc_user_oauth_session`
     KEY `IDX_TOKEN` (`access_token`),
     KEY `IDX_UID` (`uid`)
 ) COMMENT ='oauth login sessions';
+
+CREATE TABLE `uc_user_security`
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `uid`        BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'user id',
+    `qid`        VARCHAR(32)     NOT NULL COMMENT 'the id of question',
+    `answer`     VARCHAR(255)    NOT NULL COMMENT 'user answer of the question',
+    unique key UDX_UID_QID (`uid`, `qid`)
+) comment = 'user security question and answer';
+
+CREATE TABLE `uc_user_mfa`
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `uid`        bigint unsigned NOT NULL COMMENT 'user id',
+    `auth_type`  varchar(128)    NOT NULL COMMENT 'auth type',
+    `phone`      varchar(64)              DEFAULT NULL COMMENT 'phone number',
+    `email`      varchar(256)             DEFAULT NULL COMMENT 'email address',
+    `secret_key` varchar(256)             DEFAULT NULL COMMENT 'secret key of mfa',
+    UNIQUE KEY `uniq_uid_auth_type` (`uid`, `auth_type`)
+) comment = 'User multiple factor authenticate configuration';
 
 CREATE TABLE uc_tenant
 (
@@ -195,6 +226,23 @@ CREATE TABLE uc_role_children
     INDEX IDX_ROLE (`role`),
     INDEX IDX_CHILD (`child`)
 ) COMMENT = 'role children';
+
+CREATE TABLE uc_user_role
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY COMMENT 'id',
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  VARCHAR(32)     NULL COMMENT 'tenant id',
+    `uid`        BIGINT UNSIGNED NOT NULL COMMENT 'user id',
+    `role`       VARCHAR(32)     NOT NULL COMMENT 'role',
+    INDEX UDX_ROLE (`role`),
+    INDEX UDX_UID (`uid`),
+    INDEX IDX_TENANT_UID (`tenant_id`, `uid`),
+    INDEX IDX_TENANT_ROLE (`tenant_id`, `role`)
+) COMMENT = 'user roles';
 
 CREATE TABLE uc_privilege
 (

@@ -49,7 +49,7 @@ public class OauthMeta extends AuditEntity {
     private String name;
 
     @Lob
-    @Column(name = "value")
+    @Column(name = "value", columnDefinition = "TEXT")
     private String value;
 
     @Size(max = 255)

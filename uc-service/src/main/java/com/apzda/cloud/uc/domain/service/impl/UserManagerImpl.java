@@ -16,11 +16,20 @@
  */
 package com.apzda.cloud.uc.domain.service.impl;
 
-import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
+import com.apzda.cloud.uc.domain.entity.Oauth;
+import com.apzda.cloud.uc.domain.entity.Role;
+import com.apzda.cloud.uc.domain.entity.User;
+import com.apzda.cloud.uc.domain.entity.UserMeta;
+import com.apzda.cloud.uc.domain.repository.*;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Queue;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -32,6 +41,59 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserManagerImpl implements UserManager {
 
-    private UserDetailsMetaRepository userDetailsMetaRepository;
+    private final RoleRepository roleRepository;
+
+    private final PrivilegeRepository privilegeRepository;
+
+    private final UserRepository userRepository;
+
+    private final OauthRepository oauthRepository;
+
+    private final UserMetaRepository userMetaRepository;
+
+    @Override
+    public User getUserByUsername(String username) {
+        val oauth = oauthRepository.findByOpenIdAndProvider(username, Oauth.SIMPLE);
+        if (oauth.isEmpty()) {
+            throw new UsernameNotFoundException(username);
+        }
+        val userWrapper = userRepository.getById(oauth.get().getUid());
+        if (userWrapper.isEmpty()) {
+            throw new UsernameNotFoundException(username);
+        }
+        return userWrapper.get();
+    }
+
+    @Override
+    public boolean isCredentialsExpired(Long uid) {
+        val credentialsExpiredAt = userMetaRepository.getByUidAndName(uid, UserMeta.CREDENTIALS_EXPIRED_AT);
+        if (credentialsExpiredAt.isEmpty()) {
+            return false;
+        }
+        val userMeta = credentialsExpiredAt.get();
+        val value = userMeta.getValue();
+        try {
+            val expiredAt = Long.parseLong(value);
+            if (expiredAt < System.currentTimeMillis()) {
+                return true;
+            }
+        }
+        catch (Exception e) {
+            log.warn("Cannot parse user({})'s credentialsExpiredAt({}) to long: {}", uid, value, e.getMessage());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public List<Role> getRoles(Long uid) {
+        return null;
+    }
+
+    @Override
+    public List<Role> getRoles(String username) {
+        return null;
+    }
 
 }

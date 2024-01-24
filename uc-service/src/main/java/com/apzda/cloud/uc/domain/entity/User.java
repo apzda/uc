@@ -17,10 +17,9 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import com.apzda.cloud.uc.domain.vo.Gender;
+import com.apzda.cloud.uc.domain.vo.UserStatus;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -77,13 +76,13 @@ public class User extends AuditEntity {
     @Column(name = "avatar", length = 1024)
     private String avatar;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private UserStatus status;
 
     @Size(max = 10)
     @Column(name = "realm", length = 10)
@@ -97,7 +96,7 @@ public class User extends AuditEntity {
     @Column(name = "referrers", length = 256)
     private String referrers;
 
-    @Column(name = "referrer_level", columnDefinition = "tinyint UNSIGNED not null")
+    @Column(name = "referrer_level", nullable = false, columnDefinition = "tinyint unsigned")
     private Short referrerLevel;
 
     @Size(max = 32)

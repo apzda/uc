@@ -17,14 +17,14 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.TenantEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -56,5 +56,17 @@ public class Role extends TenantEntity {
     @NotNull
     @Column(name = "provider", nullable = false, length = 24)
     private String provider;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "uc_role_privilege", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
+            inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
+    @ToString.Exclude
+    private List<Privilege> privileges;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "uc_role_children", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
+            inverseJoinColumns = @JoinColumn(name = "child", referencedColumnName = "role"))
+    @ToString.Exclude
+    private List<Role> children;
 
 }

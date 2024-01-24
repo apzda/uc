@@ -16,11 +16,24 @@
  */
 package com.apzda.cloud.uc.domain.service;
 
+import com.apzda.cloud.uc.domain.entity.Role;
+import com.apzda.cloud.uc.domain.entity.User;
+
+import java.util.List;
+
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
 public interface UserManager {
+
+    List<Role> getRoles(Long uid);
+
+    List<Role> getRoles(String username);
+
+    User getUserByUsername(String username);
+
+    boolean isCredentialsExpired(Long uid);
 
 }

@@ -79,7 +79,7 @@ public class OauthSession extends AuditEntity {
     private String ip;
 
     @Lob
-    @Column(name = "extra")
+    @Column(name = "extra", columnDefinition = "longtext")
     private String extra;
 
 }

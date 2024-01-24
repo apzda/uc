@@ -14,24 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.repository;
+package com.apzda.cloud.uc.test;
 
-import com.apzda.cloud.uc.domain.entity.Oauth;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
+import com.apzda.cloud.uc.server.EnableUCenterServer;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-@Repository
-public interface OauthRepository extends CrudRepository<Oauth, Long> {
-
-    @NonNull
-    Optional<Oauth> findByOpenIdAndProvider(@NonNull String openId, @NonNull String provider);
+@SpringBootApplication
+@EnableUCenterServer
+public class TestApp {
 
 }

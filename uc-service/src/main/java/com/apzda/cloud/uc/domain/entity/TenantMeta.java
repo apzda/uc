@@ -17,10 +17,8 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.gsvc.domain.AuditEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import com.apzda.cloud.uc.domain.vo.MetaType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -39,10 +37,9 @@ import lombok.ToString;
 @Table(name = "uc_tenant_meta")
 public class TenantMeta extends AuditEntity {
 
-
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private String type;
+    private MetaType type;
 
     @NotNull
     @Column(name = "tenant_id", nullable = false)
@@ -54,10 +51,9 @@ public class TenantMeta extends AuditEntity {
     private String name;
 
     @Lob
-    @Column(name = "value")
+    @Column(name = "value", columnDefinition = "LONGTEXT")
     private String value;
 
-    @Lob
     @Column(name = "remark")
     private String remark;
 
