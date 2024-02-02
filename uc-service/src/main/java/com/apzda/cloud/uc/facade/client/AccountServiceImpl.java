@@ -20,7 +20,6 @@ import com.apzda.cloud.uc.client.AccountService;
 import com.apzda.cloud.uc.client.Request;
 import com.apzda.cloud.uc.client.UserInfo;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
-import com.apzda.cloud.uc.domain.repository.UserMetaRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +41,8 @@ public class AccountServiceImpl implements AccountService {
 
     private final UserManager userManager;
 
-    private final UserMetaRepository userMetaRepository;
-
     @Override
-    @Transactional(timeout = 2)
+    @Transactional(timeout = 3, readOnly = true)
     public UserInfo getUserInfo(Request request) {
         val builder = UserInfo.newBuilder();
         builder.setErrCode(0);
@@ -64,36 +61,18 @@ public class AccountServiceImpl implements AccountService {
                 builder.setUid(username);
                 builder.setUsername(username);
                 val status = user.getStatus();
+                builder.setEnabled(status == UserStatus.ACTIVATED || status == UserStatus.PENDING);
                 builder.setAccountNonLocked(status != UserStatus.LOCKED);
                 builder.setAccountNonExpired(status != UserStatus.EXPIRED);
-                builder.setEnabled(status == UserStatus.ACTIVATED || status == UserStatus.PENDING);
-                builder.setCredentialsNonExpired(true);
-
-                val credentialsExpiredAt = userMetaRepository.getByUidAndName(user.getId(),
-                        UserMeta.CREDENTIALS_EXPIRED_AT);
-                credentialsExpiredAt.ifPresent(userMeta -> {
-                    val value = userMeta.getValue();
-                    try {
-                        val expiredAt = Long.parseLong(value);
-                        if (expiredAt < System.currentTimeMillis()) {
-                            builder.setCredentialsNonExpired(false);
-                        }
-                    }
-                    catch (Exception e) {
-                        log.warn("Cannot parse user({})'s credentialsExpiredAt({}) to long: {}", user.getUsername(),
-                                value, e.getMessage());
-                        builder.setCredentialsNonExpired(false);
-                    }
-                });
-
-                val metas = userMetaRepository.findAllByUid(user.getId());
+                builder.setCredentialsNonExpired(userManager.isCredentialsExpired(user.getId()));
+                val metas = userManager.getUserMetas(user.getId());
 
                 for (UserMeta meta : metas) {
                     builder.addMeta(meta.convert());
                 }
 
-                // todo load authorities
-                // todo load roles
+                val roles = user.getAllRoles();
+                // todo load privileges
 
             }
         }

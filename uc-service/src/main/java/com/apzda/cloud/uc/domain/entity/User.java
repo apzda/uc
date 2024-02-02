@@ -25,6 +25,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
+
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -119,5 +126,37 @@ public class User extends AuditEntity {
     @Size(max = 255)
     @Column(name = "remark")
     private String remark;
+
+    @ManyToMany
+    @JoinTable(name = "uc_user_role", joinColumns = @JoinColumn(name = "uid", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role"))
+    @ToString.Exclude
+    private List<Role> roles;
+
+    @OneToMany
+    @JoinColumn(name = "uid", referencedColumnName = "id")
+    @ToString.Exclude
+    private List<UserMeta> metas;
+
+    @NonNull
+    public List<Role> getAllRoles(@Nullable String tenantId) {
+        val rs = new HashSet<Role>();
+        val roles1 = getRoles();
+        if (!CollectionUtils.isEmpty(roles1)) {
+            for (Role role : roles1) {
+                if (rs.contains(role)) {
+                    continue;
+                }
+                rs.add(role);
+                val children = role.getChildren();
+            }
+        }
+        return rs.stream().toList();
+    }
+
+    @NonNull
+    public List<Role> getAllRoles() {
+        return getAllRoles(null);
+    }
 
 }

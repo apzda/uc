@@ -39,6 +39,13 @@ public class JdbcUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         val user = userManager.getUserByUsername(username);
         val status = user.getStatus();
+        // 此处有三个问题要解决:
+        // 1. 用户状态对authorities的影响
+        // 2. 用户存储在LDAP中时如何加载（用户启用状态等）
+        // 3. tenant归属
+        if (status == UserStatus.ACTIVATED) {
+
+        }
 
         return User.withUsername(user.getUsername())
             .accountLocked(status == UserStatus.LOCKED)

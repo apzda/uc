@@ -23,7 +23,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
+import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -63,10 +66,36 @@ public class Role extends TenantEntity {
     @ToString.Exclude
     private List<Privilege> privileges;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "uc_role_children", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
             inverseJoinColumns = @JoinColumn(name = "child", referencedColumnName = "role"))
     @ToString.Exclude
     private List<Role> children;
+
+    public List<Role> getAllChildren() {
+        val roles = new HashSet<Role>();
+        if (!CollectionUtils.isEmpty(getChildren())) {
+            for (Role child : getChildren()) {
+                if (!roles.contains(child)) {
+                    roles.add(child);
+                    val allChildren = child.getAllChildren();
+                    if (!CollectionUtils.isEmpty(allChildren)) {
+
+                    }
+                }
+            }
+        }
+        return roles.stream().toList();
+    }
+
+    @Override
+    public int hashCode() {
+        return role.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || (obj instanceof Role && ((Role) obj).getRole().equals(role));
+    }
 
 }

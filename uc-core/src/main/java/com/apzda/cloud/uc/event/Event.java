@@ -14,24 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.service;
-
-import com.apzda.cloud.uc.domain.entity.User;
-import com.apzda.cloud.uc.domain.entity.UserMeta;
-
-import java.util.List;
+package com.apzda.cloud.uc.event;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-public interface UserManager {
+public enum Event {
 
-    User getUserByUsername(String username);
-
-    boolean isCredentialsExpired(Long uid);
-
-    List<UserMeta> getUserMetas(Long uid);
+    CREATED, ACTIVATED, DISABLED, LOCKED, EXPIRED, LOGIN, LOGOUT
 
 }

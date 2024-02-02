@@ -14,24 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.service;
+package com.apzda.cloud.uc.event;
 
-import com.apzda.cloud.uc.domain.entity.User;
-import com.apzda.cloud.uc.domain.entity.UserMeta;
-
-import java.util.List;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.lang.NonNull;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-public interface UserManager {
+@Getter
+public class UserEvent extends ApplicationEvent {
 
-    User getUserByUsername(String username);
+    private final String username;
 
-    boolean isCredentialsExpired(Long uid);
+    private final Event event;
 
-    List<UserMeta> getUserMetas(Long uid);
+    public UserEvent(@NonNull String username, @NonNull Event event) {
+        super(username);
+        this.username = username;
+        this.event = event;
+    }
 
 }

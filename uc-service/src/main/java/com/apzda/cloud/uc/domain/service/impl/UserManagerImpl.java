@@ -17,19 +17,20 @@
 package com.apzda.cloud.uc.domain.service.impl;
 
 import com.apzda.cloud.uc.domain.entity.Oauth;
-import com.apzda.cloud.uc.domain.entity.Role;
 import com.apzda.cloud.uc.domain.entity.User;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
-import com.apzda.cloud.uc.domain.repository.*;
+import com.apzda.cloud.uc.domain.repository.OauthRepository;
+import com.apzda.cloud.uc.domain.repository.UserMetaRepository;
+import com.apzda.cloud.uc.domain.repository.UserRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Queue;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -40,10 +41,6 @@ import java.util.Queue;
 @RequiredArgsConstructor
 @Slf4j
 public class UserManagerImpl implements UserManager {
-
-    private final RoleRepository roleRepository;
-
-    private final PrivilegeRepository privilegeRepository;
 
     private final UserRepository userRepository;
 
@@ -87,13 +84,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public List<Role> getRoles(Long uid) {
-        return null;
-    }
-
-    @Override
-    public List<Role> getRoles(String username) {
-        return null;
+    public List<UserMeta> getUserMetas(@NonNull Long uid) {
+        return userMetaRepository.findAllByUid(uid);
     }
 
 }
