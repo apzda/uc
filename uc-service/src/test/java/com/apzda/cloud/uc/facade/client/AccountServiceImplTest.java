@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 @ContextConfiguration(classes = TestApp.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles({ "uc-dev" })
+@ActiveProfiles({ "test" })
 class AccountServiceImplTest {
 
     @Test

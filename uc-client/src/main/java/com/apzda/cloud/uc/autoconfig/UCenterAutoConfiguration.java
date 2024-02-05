@@ -26,6 +26,7 @@ import com.apzda.cloud.uc.client.AccountServiceGsvc;
 import com.apzda.cloud.uc.context.UCenterTenantManager;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -39,12 +40,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @AutoConfiguration(before = GsvcSecurityAutoConfiguration.class)
 @EnableMethodSecurity
 @Import({ AccountServiceGsvc.class })
+@EnableConfigurationProperties(ConfigProperties.class)
 public class UCenterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    TenantManager tenantManager() {
-        return new UCenterTenantManager();
+    TenantManager tenantManager(ConfigProperties properties) {
+        return new UCenterTenantManager(properties);
     }
 
     @Bean("uc.MessageSourceNameResolver")

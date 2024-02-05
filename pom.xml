@@ -19,6 +19,7 @@
         <module>uc-service</module>
         <module>uc-core</module>
         <module>uc-client-proto</module>
+        <module>uc-server</module>
     </modules>
 
     <properties>

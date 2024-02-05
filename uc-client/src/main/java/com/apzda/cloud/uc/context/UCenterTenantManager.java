@@ -18,7 +18,10 @@ package com.apzda.cloud.uc.context;
 
 import com.apzda.cloud.gsvc.context.TenantManager;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
+import com.apzda.cloud.uc.autoconfig.ConfigProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -27,7 +30,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @version 1.0.0
  * @since 1.0.0
  **/
+@RequiredArgsConstructor
 public class UCenterTenantManager extends TenantManager {
+
+    private final ConfigProperties properties;
 
     @Override
     @NonNull
@@ -37,6 +43,17 @@ public class UCenterTenantManager extends TenantManager {
             val principal = token.getPrincipal();
         }
         return new String[] { null };
+    }
+
+    @Override
+    @NonNull
+    public String getTenantIdColumn() {
+        return StringUtils.defaultIfBlank(properties.getTenantIdColumn(), "tenant_id");
+    }
+
+    @Override
+    public boolean disableTenantPlugin() {
+        return properties.isTenantPluginDisabled();
     }
 
 }
