@@ -42,3 +42,6 @@ node_modules/
 ### vitepress ###
 docs/.vitepress/dist
 docs/.vitepress/cache
+
+## local files
+*-local.*
