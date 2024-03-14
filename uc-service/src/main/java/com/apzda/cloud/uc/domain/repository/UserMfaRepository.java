@@ -16,6 +16,7 @@
  */
 package com.apzda.cloud.uc.domain.repository;
 
+import com.apzda.cloud.uc.domain.entity.UserMfa;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +26,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  **/
 @Repository
-public interface UserMfaRepository extends CrudRepository<UserMfaRepository, Long> {
+public interface UserMfaRepository extends CrudRepository<UserMfa, Long> {
 
 }
