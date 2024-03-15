@@ -35,10 +35,21 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @PropertySource("classpath:apzda.uc.service.properties")
-@Import({ UCenterConfig.class, UserServiceGsvc.class, AccountServiceGsvc.class })
-@ComponentScan(basePackages = { "com.apzda.cloud.uc.facade", "com.apzda.cloud.uc.controller", "com.apzda.cloud.uc.app",
-        "com.apzda.cloud.uc.domain", "com.apzda.cloud.uc.filter" })
-@EnableJpaRepositories(basePackages = { "com.apzda.cloud.uc.domain.repository" })
+//@formatter:off
+@Import({
+    UCenterConfig.class,
+    UserServiceGsvc.class,
+    AccountServiceGsvc.class
+})
+@ComponentScan(basePackages = {
+    "com.apzda.cloud.uc.controller",
+    "com.apzda.cloud.uc.domain",
+    "com.apzda.cloud.uc.facade",
+    "com.apzda.cloud.uc.filter",
+    "com.apzda.cloud.uc.service"
+})
+//@formatter:on
+@EnableJpaRepositories(basePackages = {"com.apzda.cloud.uc.domain.repository"})
 @EntityScan("com.apzda.cloud.uc.domain.entity")
 @Documented
 public @interface EnableUCenterServer {

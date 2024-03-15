@@ -18,6 +18,7 @@ package com.apzda.cloud.uc.context;
 
 import com.apzda.cloud.gsvc.context.TenantManager;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
+import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMeta;
 import com.apzda.cloud.uc.autoconfig.ConfigProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -41,8 +42,14 @@ public class UCenterTenantManager extends TenantManager {
         val authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken token && token.isAuthenticated()) {
             val principal = token.getPrincipal();
+            if (principal instanceof UserDetailsMeta userDetailsMeta) {
+                val currentOrgId = userDetailsMeta.get("currentOrgId", "");
+                if (StringUtils.isNotBlank(currentOrgId)) {
+                    return new String[]{currentOrgId};
+                }
+            }
         }
-        return new String[] { null };
+        return new String[]{null};
     }
 
     @Override

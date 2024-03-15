@@ -14,26 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.service;
+package com.apzda.cloud.uc.config;
 
-import com.apzda.cloud.uc.domain.entity.User;
-import com.apzda.cloud.uc.domain.entity.UserMeta;
-import org.springframework.lang.NonNull;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-public interface UserManager {
-
-    User getUserByUsername(String username);
-
-    boolean isCredentialsExpired(Long uid);
-
-    List<UserMeta> getUserMetas(Long uid);
-
-    List<UserMeta> getUserMetas(@NonNull Long uid, String name);
+@Data
+@ConfigurationProperties(prefix = "apzda.ucenter.server")
+public class UCenterConfigProperties {
+    private final Map<String, String> endpoint = new LinkedHashMap<>();
 }

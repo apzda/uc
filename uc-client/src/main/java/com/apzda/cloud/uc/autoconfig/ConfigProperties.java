@@ -31,5 +31,4 @@ public class ConfigProperties {
     private boolean tenantPluginDisabled = true;
 
     private String tenantIdColumn = "tenant_id";
-
 }

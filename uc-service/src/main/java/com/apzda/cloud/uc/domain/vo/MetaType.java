@@ -23,6 +23,6 @@ package com.apzda.cloud.uc.domain.vo;
  **/
 public enum MetaType {
 
-    S, I, L, D, F;
+    S, I, L, D, F, O;
 
 }

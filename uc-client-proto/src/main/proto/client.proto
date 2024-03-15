@@ -15,6 +15,7 @@ enum MetaValueType {
   LONG = 2;
   DOUBLE = 3;
   FLOAT = 4;
+  OBJECT = 5;
 }
 
 message UserMeta {
@@ -23,23 +24,70 @@ message UserMeta {
   MetaValueType type = 3;
 }
 
+message Department {
+  string id = 1;
+  string name = 2;
+  optional string desc = 3;
+  optional string icon = 4;
+  optional string job_title = 5;
+}
+
+message Organization {
+  string id = 1;
+  string name = 2;
+  optional string desc = 3;
+  optional string icon = 4;
+  optional string job_title = 5;
+  repeated Department department = 6;
+}
+
 message UserInfo {
   int32 err_code = 1;
   optional string err_msg = 2;
   string uid = 3;
   string username = 4 ;
-  bool account_non_expired = 5;
-  bool account_non_locked = 6;
-  bool credentials_non_expired = 7;
-  bool enabled = 8;
-  repeated string authorities = 9;
-  repeated UserMeta meta = 100;
+  string password = 5;
+  bool account_non_expired = 6;
+  bool account_non_locked = 7;
+  bool credentials_non_expired = 8;
+  bool enabled = 9;
+  optional string avatar = 10;
+  optional string phone = 11;
+  optional string email = 12;
+  optional string first_name = 13;
+  optional string last_name = 14;
+  repeated string authority = 15;
+  repeated UserMeta meta = 16;
+  repeated Organization org = 17;
+}
+
+message UserMetaResp {
+  int32 err_code = 1;
+  optional string err_msg = 2;
+  repeated UserMeta meta = 3;
+}
+
+message OrganizationResp {
+  int32 err_code = 1;
+  optional string err_msg = 2;
+  repeated Organization org = 3;
+}
+
+message AuthorityResp {
+  int32 err_code = 1;
+  optional string err_msg = 2;
+  repeated string authority = 3;
 }
 
 message Request {
   string username = 1 [(buf.validate.field).required = true];
+  optional string meta_name = 2;
+  optional bool all = 3;
 }
 
 service AccountService {
   rpc getUserInfo(Request) returns (UserInfo);
+  rpc getMetas(Request) returns (UserMetaResp);
+  rpc getAuthorities(Request) returns (AuthorityResp);
+  rpc getOrganizations(Request) returns(OrganizationResp);
 }

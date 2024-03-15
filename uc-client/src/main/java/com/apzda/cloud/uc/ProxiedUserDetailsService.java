@@ -16,21 +16,20 @@
  */
 package com.apzda.cloud.uc;
 
-import com.apzda.cloud.gsvc.security.userdetails.DefaultUserDetailsMeta;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.crypto.digest.MD5;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.client.AccountService;
 import com.apzda.cloud.uc.client.Request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -42,35 +41,30 @@ import java.util.List;
 public class ProxiedUserDetailsService implements UserDetailsService {
 
     private final AccountService accountService;
-
     private final UserDetailsMetaRepository userDetailsMetaRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user;
+
         try {
             val userInfo = accountService.getUserInfo(Request.newBuilder().setUsername(username).build());
             if (userInfo.getErrCode() == 0) {
-                List<SimpleGrantedAuthority> authorities;
-                if (userInfo.getAuthoritiesCount() > 0) {
-                    authorities = userInfo.getAuthoritiesList().stream().map(SimpleGrantedAuthority::new).toList();
-                }
-                else {
-                    authorities = Collections.emptyList();
-                }
-                user = new User(username, "", userInfo.getEnabled(), userInfo.getAccountNonExpired(),
-                        userInfo.getCredentialsNonExpired(), userInfo.getAccountNonLocked(), authorities);
-            }
-            else {
+                user = new User(username, userInfo.getPassword(), userInfo.getEnabled(), userInfo.getAccountNonExpired(),
+                    userInfo.getCredentialsNonExpired(), userInfo.getAccountNonLocked(), Collections.emptyList());
+            } else if (userInfo.getErrCode() == 404) {
+                throw new UsernameNotFoundException(username);
+            } else {
                 throw new IllegalStateException(userInfo.getErrMsg());
             }
+        } catch (Exception e) {
+            log.error("Cannot load user info({}), use disabled anonymous instead - {}", username, e.getMessage());
+            user = new User("anonymous", MD5.create().digestHex(DateUtil.now()),
+                false, true, true,
+                true, Collections.emptyList());
         }
-        catch (Exception e) {
-            log.warn("Cannot load user info({}), use disabled anonymous instead - {}", username, e.getMessage());
-            user = new User("anonymous", null, false, true, true, true, Collections.emptyList());
-        }
-        // only for load authorities. Cannot be used to identify a user!!!
-        return new DefaultUserDetailsMeta(user, userDetailsMetaRepository);
+
+        return userDetailsMetaRepository.create(user);
     }
 
 }

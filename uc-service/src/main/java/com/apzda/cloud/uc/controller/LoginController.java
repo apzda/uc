@@ -52,12 +52,12 @@ public class LoginController {
 
     private final PasswordEncoder passwordEncoder;
 
-    @GetMapping("")
+    @GetMapping
     @Transactional
     @Modifying
     public ModelAndView login(@RequestParam(value = "redirect_to", required = false) String redirectTo) {
         log.warn("redirectTo {}", redirectTo);
-        sign();
+        //sign();
         return null;
     }
 

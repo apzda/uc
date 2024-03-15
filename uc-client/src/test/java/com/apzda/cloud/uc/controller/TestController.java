@@ -14,26 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.service;
+package com.apzda.cloud.uc.controller;
 
-import com.apzda.cloud.uc.domain.entity.User;
-import com.apzda.cloud.uc.domain.entity.UserMeta;
-import org.springframework.lang.NonNull;
-
-import java.util.List;
+import com.apzda.cloud.gsvc.dto.CurrentUser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-public interface UserManager {
 
-    User getUserByUsername(String username);
-
-    boolean isCredentialsExpired(Long uid);
-
-    List<UserMeta> getUserMetas(Long uid);
-
-    List<UserMeta> getUserMetas(@NonNull Long uid, String name);
+@RestController
+public class TestController {
+    @GetMapping("/test/ok")
+    public String ok(CurrentUser currentUser) {
+        return currentUser.getUid();
+    }
 }

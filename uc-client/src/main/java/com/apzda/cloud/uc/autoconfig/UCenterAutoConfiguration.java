@@ -20,17 +20,28 @@ import com.apzda.cloud.gsvc.context.TenantManager;
 import com.apzda.cloud.gsvc.i18n.MessageSourceNameResolver;
 import com.apzda.cloud.gsvc.security.config.GsvcSecurityAutoConfiguration;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
+import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
 import com.apzda.cloud.uc.ProxiedUserDetailsService;
+import com.apzda.cloud.uc.UserDetailsMetaServiceImpl;
 import com.apzda.cloud.uc.client.AccountService;
 import com.apzda.cloud.uc.client.AccountServiceGsvc;
 import com.apzda.cloud.uc.context.UCenterTenantManager;
+import com.apzda.cloud.uc.resolver.CurrentUserParamResolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.lang.NonNull;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -39,8 +50,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  **/
 @AutoConfiguration(before = GsvcSecurityAutoConfiguration.class)
 @EnableMethodSecurity
-@Import({ AccountServiceGsvc.class })
+@Import({AccountServiceGsvc.class})
 @EnableConfigurationProperties(ConfigProperties.class)
+@Slf4j
 public class UCenterAutoConfiguration {
 
     @Bean
@@ -56,9 +68,21 @@ public class UCenterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    UserDetailsService userDetailsService(AccountService accountService,
-            UserDetailsMetaRepository userDetailsMetaRepository) {
+    UserDetailsService userDetailsService(AccountService accountService, UserDetailsMetaRepository userDetailsMetaRepository) {
         return new ProxiedUserDetailsService(accountService, userDetailsMetaRepository);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    UserDetailsMetaService userDetailsMetaService(AccountService accountService, ObjectMapper objectMapper) {
+        return new UserDetailsMetaServiceImpl(accountService, objectMapper);
+    }
+
+    @Configuration
+    static class WebMvcConfigure implements WebMvcConfigurer {
+        @Override
+        public void addArgumentResolvers(@NonNull List<HandlerMethodArgumentResolver> resolvers) {
+            resolvers.add(new CurrentUserParamResolver());
+        }
+    }
 }

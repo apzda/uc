@@ -38,4 +38,6 @@ public interface UserMetaRepository extends CrudRepository<UserMeta, Long> {
     @NonNull
     List<UserMeta> findAllByUid(@NonNull Long uid);
 
+    @NonNull
+    List<UserMeta> findAllByUidAndName(Long uid, String name);
 }

@@ -16,13 +16,23 @@
  */
 package com.apzda.cloud.uc.config;
 
+import com.apzda.cloud.gsvc.security.authentication.DeviceAwareAuthenticationProcessingFilter;
+import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.security.JdbcUserDetailsService;
+import com.apzda.cloud.uc.security.authentication.DefaultAuthenticationProvider;
+import com.apzda.cloud.uc.security.filter.UsernameAndPasswordFilter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -31,11 +41,35 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  **/
 @Configuration(proxyBeanMethods = false)
 @Slf4j
+@EnableConfigurationProperties(UCenterConfigProperties.class)
 public class UCenterConfig {
+    @Configuration
+    static class MvcConfigure implements WebMvcConfigurer {
 
-    @Bean
-    UserDetailsService userDetailsService(UserManager userManager, PasswordEncoder passwordEncoder) {
-        return new JdbcUserDetailsService(userManager);
     }
 
+    @Configuration(proxyBeanMethods = false)
+    static class SecurityConfigure {
+        @Bean
+        UserDetailsService userDetailsService(UserManager userManager, UserDetailsMetaRepository userDetailsMetaRepository) {
+            return new JdbcUserDetailsService(userManager, userDetailsMetaRepository);
+        }
+
+        @Bean("defaultAuthenticationProvider")
+        AuthenticationProvider defaultAuthenticationProvider(UserDetailsService userDetailsService,
+                                                             UserDetailsMetaRepository userDetailsMetaRepository,
+                                                             PasswordEncoder passwordEncoder) {
+            return new DefaultAuthenticationProvider(userDetailsService, userDetailsMetaRepository, passwordEncoder);
+        }
+
+        @Bean
+        DeviceAwareAuthenticationProcessingFilter usernameAndPasswordFilter(AuthenticationManager authenticationManager,
+                                                                            UCenterConfigProperties uCenterConfigProperties) {
+            val usernameAndPassword = uCenterConfigProperties.getEndpoint().getOrDefault("username-password", "login");
+            log.trace("获取到配置的 username-password endpoint: {}", usernameAndPassword);
+            val loginUrl = "/" + StringUtils.strip(StringUtils.defaultIfBlank(usernameAndPassword, "login"), "/");
+
+            return new UsernameAndPasswordFilter(loginUrl, authenticationManager);
+        }
+    }
 }

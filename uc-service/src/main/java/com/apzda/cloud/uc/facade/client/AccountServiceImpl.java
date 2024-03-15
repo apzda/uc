@@ -16,18 +16,20 @@
  */
 package com.apzda.cloud.uc.facade.client;
 
-import com.apzda.cloud.uc.client.AccountService;
-import com.apzda.cloud.uc.client.Request;
-import com.apzda.cloud.uc.client.UserInfo;
+import com.apzda.cloud.uc.client.*;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
+import com.apzda.cloud.uc.domain.mapper.MetaTypeMapper;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -40,44 +42,78 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountServiceImpl implements AccountService {
 
     private final UserManager userManager;
+    private final MetaTypeMapper metaTypeMapper;
 
     @Override
     @Transactional(timeout = 3, readOnly = true)
     public UserInfo getUserInfo(Request request) {
         val builder = UserInfo.newBuilder();
-        builder.setErrCode(0);
-        val username = request.getUsername();
-        if (StringUtils.isBlank(username)) {
-            builder.setErrCode(404);
-            builder.setErrMsg("user not found");
-        }
-        else {
+        try {
+            builder.setErrCode(0);
+            val username = request.getUsername();
             val user = userManager.getUserByUsername(username);
-            if (user == null) {
-                builder.setErrCode(404);
-                builder.setErrMsg("user not found");
+            builder.setUid(username);
+            builder.setUsername(username);
+            val status = user.getStatus();
+            builder.setEnabled(status == UserStatus.ACTIVATED || status == UserStatus.PENDING);
+            builder.setAccountNonLocked(status != UserStatus.LOCKED);
+            builder.setAccountNonExpired(status != UserStatus.EXPIRED);
+            builder.setCredentialsNonExpired(userManager.isCredentialsExpired(user.getId()));
+            if (request.hasAll() && request.getAll()) {
+                val metas = getMetas(request);
+                builder.addAllMeta(metas.getMetaList());
+                val org = getOrganizations(request);
+                builder.addAllOrg(org.getOrgList());
+                val authorities = getAuthorities(request);
+                builder.addAllAuthority(authorities.getAuthorityList());
             }
-            else {
-                builder.setUid(username);
-                builder.setUsername(username);
-                val status = user.getStatus();
-                builder.setEnabled(status == UserStatus.ACTIVATED || status == UserStatus.PENDING);
-                builder.setAccountNonLocked(status != UserStatus.LOCKED);
-                builder.setAccountNonExpired(status != UserStatus.EXPIRED);
-                builder.setCredentialsNonExpired(userManager.isCredentialsExpired(user.getId()));
-                val metas = userManager.getUserMetas(user.getId());
-
-                for (UserMeta meta : metas) {
-                    builder.addMeta(meta.convert());
-                }
-
-                val roles = user.getAllRoles();
-                // todo load privileges
-
-            }
+        } catch (UsernameNotFoundException e) {
+            builder.setErrCode(404);
+            builder.setErrMsg("User not found");
         }
+        return builder.build();
+    }
+
+    @Override
+    public UserMetaResp getMetas(Request request) {
+        val builder = UserMetaResp.newBuilder().setErrCode(0);
+        try {
+            val username = request.getUsername();
+            val user = userManager.getUserByUsername(username);
+            val metaName = request.getMetaName();
+            List<UserMeta> metas;
+            if (StringUtils.isBlank(metaName)) {
+                metas = userManager.getUserMetas(user.getId());
+            } else {
+                metas = userManager.getUserMetas(user.getId(), metaName);
+            }
+
+            val collect = metas.stream().map(meta -> {
+                val b = com.apzda.cloud.uc.client.UserMeta.newBuilder();
+                b.setName(meta.getName());
+                b.setType(metaTypeMapper.fromMetaType(meta.getType()));
+                b.setValue(meta.getValue());
+                return b.build();
+            }).toList();
+            builder.addAllMeta(collect);
+        } catch (UsernameNotFoundException e) {
+            builder.setErrCode(404);
+            builder.setErrMsg(e.getMessage());
+        }
+        return builder.build();
+    }
+
+    @Override
+    public AuthorityResp getAuthorities(Request request) {
+        val builder = AuthorityResp.newBuilder().setErrCode(0);
 
         return builder.build();
     }
 
+    @Override
+    public OrganizationResp getOrganizations(Request request) {
+        val builder = OrganizationResp.newBuilder().setErrCode(0);
+
+        return builder.build();
+    }
 }

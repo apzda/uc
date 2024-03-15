@@ -26,6 +26,7 @@ import com.apzda.cloud.uc.domain.service.UserManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -50,13 +51,16 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public User getUserByUsername(String username) {
+        if (StringUtils.isBlank(username)) {
+            throw new UsernameNotFoundException("username is blank");
+        }
         val oauth = oauthRepository.findByOpenIdAndProvider(username, Oauth.SIMPLE);
         if (oauth.isEmpty()) {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(String.format("Oauth Data of user '%s' not found", username));
         }
         val userWrapper = userRepository.getById(oauth.get().getUid());
         if (userWrapper.isEmpty()) {
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
         return userWrapper.get();
     }
@@ -74,8 +78,7 @@ public class UserManagerImpl implements UserManager {
             if (expiredAt < System.currentTimeMillis()) {
                 return true;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.warn("Cannot parse user({})'s credentialsExpiredAt({}) to long: {}", uid, value, e.getMessage());
             return true;
         }
@@ -88,4 +91,7 @@ public class UserManagerImpl implements UserManager {
         return userMetaRepository.findAllByUid(uid);
     }
 
+    public List<UserMeta> getUserMetas(@NonNull Long uid, String name) {
+        return userMetaRepository.findAllByUidAndName(uid, name);
+    }
 }

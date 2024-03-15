@@ -19,3 +19,14 @@ spring:
 logging:
   level:
     com.apzda.cloud: trace
+
+apzda:
+  ucenter:
+    server:
+      endpoint:
+        username-password: /uc/login
+
+  cloud:
+    reference:
+      CaptchaService:
+        svc-name: http://localhost:38082
