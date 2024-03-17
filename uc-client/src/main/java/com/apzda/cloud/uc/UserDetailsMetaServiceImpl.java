@@ -18,8 +18,8 @@ package com.apzda.cloud.uc;
 
 import com.apzda.cloud.gsvc.core.GsvcContextHolder;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
-import com.apzda.cloud.uc.client.AccountService;
-import com.apzda.cloud.uc.client.Request;
+import com.apzda.cloud.uc.proto.AccountService;
+import com.apzda.cloud.uc.proto.Request;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

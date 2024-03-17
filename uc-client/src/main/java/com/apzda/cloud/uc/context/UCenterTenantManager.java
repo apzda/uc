@@ -19,7 +19,7 @@ package com.apzda.cloud.uc.context;
 import com.apzda.cloud.gsvc.context.TenantManager;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMeta;
-import com.apzda.cloud.uc.autoconfig.ConfigProperties;
+import com.apzda.cloud.uc.UserMetas;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @since 1.0.0
  **/
 @RequiredArgsConstructor
-public class UCenterTenantManager extends TenantManager {
-
-    private final ConfigProperties properties;
-
+public class UCenterTenantManager extends TenantManager<String> {
     @Override
     @NonNull
     protected String[] getTenantIds() {
@@ -43,7 +40,7 @@ public class UCenterTenantManager extends TenantManager {
         if (authentication instanceof JwtAuthenticationToken token && token.isAuthenticated()) {
             val principal = token.getPrincipal();
             if (principal instanceof UserDetailsMeta userDetailsMeta) {
-                val currentOrgId = userDetailsMeta.get("currentOrgId", "");
+                val currentOrgId = userDetailsMeta.get(UserMetas.CURRENT_ORG_ID, authentication, "");
                 if (StringUtils.isNotBlank(currentOrgId)) {
                     return new String[]{currentOrgId};
                 }
@@ -51,16 +48,4 @@ public class UCenterTenantManager extends TenantManager {
         }
         return new String[]{null};
     }
-
-    @Override
-    @NonNull
-    public String getTenantIdColumn() {
-        return StringUtils.defaultIfBlank(properties.getTenantIdColumn(), "tenant_id");
-    }
-
-    @Override
-    public boolean disableTenantPlugin() {
-        return properties.isTenantPluginDisabled();
-    }
-
 }

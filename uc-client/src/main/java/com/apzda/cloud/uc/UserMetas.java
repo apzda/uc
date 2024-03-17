@@ -14,22 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.controller;
-
-import com.apzda.cloud.gsvc.dto.CurrentUser;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+package com.apzda.cloud.uc;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-
-@RestController
-public class TestController {
-    @GetMapping("/test/ok")
-    public String ok(CurrentUser currentUser) {
-        return currentUser.getUid();
-    }
+public interface UserMetas {
+    String CURRENT_ORG_ID = "CUR_ORG_ID";
 }

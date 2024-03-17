@@ -2,7 +2,7 @@ package com.apzda.cloud.uc;
 
 import com.apzda.cloud.gsvc.client.IServiceCaller;
 import com.apzda.cloud.gsvc.dto.CurrentUser;
-import com.apzda.cloud.uc.client.*;
+import com.apzda.cloud.uc.proto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

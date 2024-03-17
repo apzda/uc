@@ -14,10 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.autoconfig;
+package com.apzda.cloud.uc.security.token;
 
+import com.apzda.cloud.gsvc.security.token.JwtToken;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -25,10 +30,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.0
  **/
 @Data
-@ConfigurationProperties(prefix = "apzda.ucenter")
-public class ConfigProperties {
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserToken implements JwtToken, Serializable {
+    @Serial
+    private static final long serialVersionUID = -2763131228048354173L;
 
-    private boolean tenantPluginDisabled = true;
+    private String name;
 
-    private String tenantIdColumn = "tenant_id";
+    private String accessToken;
+
+    private String refreshToken;
+
+    private String mfa;
 }

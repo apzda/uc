@@ -23,25 +23,17 @@ import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
 import com.apzda.cloud.uc.ProxiedUserDetailsService;
 import com.apzda.cloud.uc.UserDetailsMetaServiceImpl;
-import com.apzda.cloud.uc.client.AccountService;
-import com.apzda.cloud.uc.client.AccountServiceGsvc;
 import com.apzda.cloud.uc.context.UCenterTenantManager;
-import com.apzda.cloud.uc.resolver.CurrentUserParamResolver;
+import com.apzda.cloud.uc.proto.AccountService;
+import com.apzda.cloud.uc.proto.AccountServiceGsvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.lang.NonNull;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -51,14 +43,13 @@ import java.util.List;
 @AutoConfiguration(before = GsvcSecurityAutoConfiguration.class)
 @EnableMethodSecurity
 @Import({AccountServiceGsvc.class})
-@EnableConfigurationProperties(ConfigProperties.class)
 @Slf4j
 public class UCenterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    TenantManager tenantManager(ConfigProperties properties) {
-        return new UCenterTenantManager(properties);
+    TenantManager<String> tenantManager() {
+        return new UCenterTenantManager();
     }
 
     @Bean("uc.MessageSourceNameResolver")
@@ -76,13 +67,5 @@ public class UCenterAutoConfiguration {
     @ConditionalOnMissingBean
     UserDetailsMetaService userDetailsMetaService(AccountService accountService, ObjectMapper objectMapper) {
         return new UserDetailsMetaServiceImpl(accountService, objectMapper);
-    }
-
-    @Configuration
-    static class WebMvcConfigure implements WebMvcConfigurer {
-        @Override
-        public void addArgumentResolvers(@NonNull List<HandlerMethodArgumentResolver> resolvers) {
-            resolvers.add(new CurrentUserParamResolver());
-        }
     }
 }
