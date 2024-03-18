@@ -16,7 +16,6 @@
  */
 package com.apzda.cloud.uc.test;
 
-import com.apzda.cloud.uc.server.EnableUCenterServer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
@@ -25,7 +24,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0.0
  **/
 @SpringBootApplication
-@EnableUCenterServer
 public class TestApp {
 
 }

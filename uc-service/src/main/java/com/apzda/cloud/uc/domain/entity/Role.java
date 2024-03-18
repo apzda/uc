@@ -16,7 +16,10 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.TenantEntity;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
+import com.apzda.cloud.gsvc.model.Tenantable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,7 +42,18 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "uc_role")
-public class Role extends TenantEntity {
+public class Role extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @NotNull
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
 
     @Size(max = 32)
     @NotNull
@@ -62,13 +76,13 @@ public class Role extends TenantEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "uc_role_privilege", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
-            inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
+        inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     @ToString.Exclude
     private List<Privilege> privileges;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "uc_role_children", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
-            inverseJoinColumns = @JoinColumn(name = "child", referencedColumnName = "role"))
+        inverseJoinColumns = @JoinColumn(name = "child", referencedColumnName = "role"))
     @ToString.Exclude
     private List<Role> children;
 

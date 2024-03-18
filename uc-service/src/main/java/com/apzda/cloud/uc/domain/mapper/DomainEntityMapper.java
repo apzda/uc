@@ -16,9 +16,12 @@
  */
 package com.apzda.cloud.uc.domain.mapper;
 
-import com.apzda.cloud.uc.domain.vo.MetaType;
-import com.apzda.cloud.uc.proto.MetaValueType;
+import com.apzda.cloud.uc.domain.entity.User;
+import com.apzda.cloud.uc.proto.UserInfo;
+import com.apzda.cloud.uc.proto.UserMeta;
 import org.mapstruct.*;
+
+import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -27,20 +30,20 @@ import org.mapstruct.*;
  **/
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
     nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
+    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
+    uses = MetaTypeMapper.class
 )
-public interface MetaTypeMapper {
-    @ValueMappings({
-        @ValueMapping(target = "S", source = "STRING"),
-        @ValueMapping(target = "I", source = "INTEGER"),
-        @ValueMapping(target = "L", source = "LONG"),
-        @ValueMapping(target = "D", source = "DOUBLE"),
-        @ValueMapping(target = "F", source = "FLOAT"),
-        @ValueMapping(target = "O", source = "OBJECT"),
-        @ValueMapping(target = "S", source = "UNRECOGNIZED")
-    })
-    MetaType fromMetaValueType(MetaValueType metaValueType);
+public interface DomainEntityMapper {
+    @Mapping(target = "uid", source = "username")
+    @Mapping(target = "password", source = "passwd")
+    @Mapping(target = "metaList", source = "metas")
+    UserInfo fromUserEntity(User user);
 
     @InheritInverseConfiguration
-    MetaValueType fromMetaType(MetaType metaType);
+    @Mapping(target = "metas", ignore = true)
+    User fromUserInfo(UserInfo userInfo);
+
+    UserMeta fromEntity(com.apzda.cloud.uc.domain.entity.UserMeta meta);
+
+    List<UserMeta> fromEntities(List<com.apzda.cloud.uc.domain.entity.UserMeta> metas);
 }

@@ -14,17 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.facade.server;
+package com.apzda.cloud.uc.mapper;
 
-import com.apzda.cloud.uc.server.proto.UserService;
-import org.springframework.stereotype.Service;
+import com.apzda.cloud.gsvc.dto.CurrentUser;
+import com.apzda.cloud.gsvc.ext.GsvcExt;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+
+import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-@Service
-public class UserServiceImpl implements UserService {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, nullValueCheckStrategy = ALWAYS)
+public interface CurrentUserMapper {
+    CurrentUser from(GsvcExt.CurrentUser user);
 
+
+    GsvcExt.CurrentUser from(CurrentUser user);
 }

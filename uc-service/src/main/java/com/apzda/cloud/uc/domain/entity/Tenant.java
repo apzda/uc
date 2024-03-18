@@ -16,7 +16,9 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.AuditEntity;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
 import com.apzda.cloud.uc.domain.vo.TenantStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +37,14 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "uc_tenant")
-public class Tenant extends AuditEntity {
+public class Tenant extends AuditableEntity<Long, String, Long> implements SoftDeletable {
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @Size(max = 64)
     @NotNull

@@ -16,11 +16,11 @@
  */
 package com.apzda.cloud.uc.facade.client;
 
-import com.apzda.cloud.uc.client.*;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import com.apzda.cloud.uc.domain.mapper.MetaTypeMapper;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
+import com.apzda.cloud.uc.proto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
             }
 
             val collect = metas.stream().map(meta -> {
-                val b = com.apzda.cloud.uc.client.UserMeta.newBuilder();
+                val b = com.apzda.cloud.uc.proto.UserMeta.newBuilder();
                 b.setName(meta.getName());
                 b.setType(metaTypeMapper.fromMetaType(meta.getType()));
                 b.setValue(meta.getValue());

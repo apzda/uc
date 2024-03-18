@@ -16,9 +16,9 @@
  */
 package com.apzda.cloud.uc.server;
 
-import com.apzda.cloud.uc.client.AccountServiceGsvc;
 import com.apzda.cloud.uc.config.UCenterConfig;
-import com.apzda.cloud.uc.proto.UserServiceGsvc;
+import com.apzda.cloud.uc.proto.AccountServiceGsvc;
+import com.apzda.cloud.uc.server.proto.UserServiceGsvc;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;

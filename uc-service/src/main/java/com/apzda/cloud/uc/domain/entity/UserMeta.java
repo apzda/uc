@@ -16,9 +16,11 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.AuditEntity;
-import com.apzda.cloud.uc.client.MetaValueType;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
 import com.apzda.cloud.uc.domain.vo.MetaType;
+import com.apzda.cloud.uc.proto.MetaValueType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -37,11 +39,17 @@ import lombok.val;
 @ToString
 @Entity
 @Table(name = "uc_user_meta")
-public class UserMeta extends AuditEntity {
-
+public class UserMeta extends AuditableEntity<Long, String, Long> implements SoftDeletable {
     public static final String CREDENTIALS_EXPIRED_AT = "credentials_expired_at";
 
     public static final String EMAIL_ACTIVATED_AT = "email_activated_at";
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -63,8 +71,8 @@ public class UserMeta extends AuditEntity {
     @Column(name = "remark")
     private String remark;
 
-    public com.apzda.cloud.uc.client.UserMeta convert() {
-        val builder = com.apzda.cloud.uc.client.UserMeta.newBuilder();
+    public com.apzda.cloud.uc.proto.UserMeta convert() {
+        val builder = com.apzda.cloud.uc.proto.UserMeta.newBuilder();
         builder.setName(name);
         builder.setValue(value);
         switch (type) {

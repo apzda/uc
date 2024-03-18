@@ -16,7 +16,10 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.AuditEntity;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
+import com.apzda.cloud.gsvc.model.Tenantable;
 import com.apzda.cloud.uc.domain.vo.MetaType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +38,14 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "uc_tenant_meta")
-public class TenantMeta extends AuditEntity {
+public class TenantMeta extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")

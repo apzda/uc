@@ -16,10 +16,10 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.AuditEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -36,13 +36,21 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "uc_user_oauth")
-public class Oauth extends AuditEntity {
-
+public class Oauth extends AuditableEntity<Long, String, Long> implements SoftDeletable {
     public static final String SIMPLE = "simple";
 
     public static final String PHONE = "phone";
 
     public static final String EMAIL = "email";
+
+    public static final String LDAP = "ldap";
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @NotNull
     @Column(name = "uid", nullable = false)

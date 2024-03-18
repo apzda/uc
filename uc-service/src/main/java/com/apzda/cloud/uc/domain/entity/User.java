@@ -16,7 +16,9 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.AuditEntity;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
 import com.apzda.cloud.uc.domain.vo.Gender;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
 import jakarta.persistence.*;
@@ -43,7 +45,14 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "uc_user")
-public class User extends AuditEntity {
+public class User extends AuditableEntity<Long, String, Long> implements SoftDeletable {
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @Size(max = 32)
     @NotNull
@@ -129,7 +138,7 @@ public class User extends AuditEntity {
 
     @ManyToMany
     @JoinTable(name = "uc_user_role", joinColumns = @JoinColumn(name = "uid", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role"))
+        inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role"))
     @ToString.Exclude
     private List<Role> roles;
 

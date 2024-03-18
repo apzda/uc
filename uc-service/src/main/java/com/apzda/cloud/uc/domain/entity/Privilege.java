@@ -16,10 +16,11 @@
  */
 package com.apzda.cloud.uc.domain.entity;
 
-import com.apzda.cloud.gsvc.domain.TenantEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.apzda.cloud.gsvc.domain.AuditableEntity;
+import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
+import com.apzda.cloud.gsvc.model.SoftDeletable;
+import com.apzda.cloud.gsvc.model.Tenantable;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -36,7 +37,18 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "uc_privilege")
-public class Privilege extends TenantEntity {
+public class Privilege extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
+
+    @Id
+    @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @NotNull
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
 
     @Size(max = 256)
     @NotNull
