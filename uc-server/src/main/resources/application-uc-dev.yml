@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: ucenter-service
+  config:
+    import: classpath:/druid.properties
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
