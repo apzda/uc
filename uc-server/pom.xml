@@ -13,7 +13,10 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <druid.version>1.2.22</druid.version>
+        <jasypt.version>3.0.5</jasypt.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.apzda.cloud</groupId>
@@ -28,7 +31,16 @@
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>${jasypt.version}</version>
+        </dependency>
         <!-- runtime -->
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -52,6 +64,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-maven-plugin</artifactId>
+                <version>${jasypt.version}</version>
             </plugin>
         </plugins>
     </build>

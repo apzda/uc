@@ -5,10 +5,14 @@ spring:
   application:
     name: ucenter-service
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-    username: root
-    password: Abc12332!
+    host: ENC(etZ5PVB40lymY0rIeRK3Q0tSdW3Ftjdsx2IBkEPx/4qxu2Lnzgkywl4Z89nN86Fc)
+    url: jdbc:mysql://${spring.datasource.host}:3306/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: ENC(amxsb/5GE92W7SmwbvRLQCN8GGnnwe1ZgMMM7UvbBC8N1uz31oMiWe/O9qWEDwLX)
+    password: ENC(ft2+PBi1ZCeIoD6gpiOHgmTf+AX4VmuqjUXQz1iyflzVQehpQmSGXR0rXw6hby1c)
+  flyway:
+    enabled: false
   data:
     redis:
       database: 1
@@ -18,7 +22,8 @@ spring:
 
 logging:
   level:
-    com.apzda.cloud: trace
+    com.apzda.cloud: debug
+    web: info
 
 apzda:
   ucenter:
