@@ -16,6 +16,7 @@
  */
 package com.apzda.cloud.uc.server;
 
+import com.apzda.cloud.uc.config.DruidConfig;
 import com.apzda.cloud.uc.config.UCenterConfig;
 import com.apzda.cloud.uc.proto.AccountServiceGsvc;
 import com.apzda.cloud.uc.server.proto.UserServiceGsvc;
@@ -38,6 +39,7 @@ import java.lang.annotation.*;
 //@formatter:off
 @Import({
     UCenterConfig.class,
+    DruidConfig.class,
     UserServiceGsvc.class,
     AccountServiceGsvc.class
 })
@@ -49,7 +51,7 @@ import java.lang.annotation.*;
     "com.apzda.cloud.uc.service"
 })
 //@formatter:on
-@EnableJpaRepositories(basePackages = {"com.apzda.cloud.uc.domain.repository"})
+@EnableJpaRepositories(basePackages = { "com.apzda.cloud.uc.domain.repository" })
 @EntityScan("com.apzda.cloud.uc.domain.entity")
 @Documented
 public @interface EnableUCenterServer {
