@@ -30,5 +30,16 @@ import java.util.Map;
 @Data
 @ConfigurationProperties(prefix = "apzda.ucenter.server")
 public class UCenterConfigProperties {
+
+    /**
+     * 是否启用(run-as)功能
+     */
+    private boolean runAsEnabled = false;
+
+    private String runAsAuthority = "RUNAS";
+
+    private String beRunAsAuthority = "SIMPLE_USER";
+
     private final Map<String, String> endpoint = new LinkedHashMap<>();
+
 }
