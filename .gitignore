@@ -33,6 +33,9 @@ buildNumber.properties
 ### VS Code ###
 .vscode/
 
+## jpb ###
+.jpb/
+
 ### Mac OS ###
 .DS_Store
 
