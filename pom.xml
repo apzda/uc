@@ -30,12 +30,12 @@
 
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/apzda/uc/issues</url>
+        <url>https://github.com/apzda/ucenter/issues</url>
     </issueManagement>
 
     <ciManagement>
         <system>Github Actions</system>
-        <url>https://github.com/apzda/uc/actions</url>
+        <url>https://github.com/apzda/ucenter/actions</url>
     </ciManagement>
 
     <licenses>
@@ -57,9 +57,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/apzda/uc.git</url>
-        <connection>scm:git@github.com:apzda/uc.git</connection>
-        <developerConnection>scm:git:git@github.com:apzda/uc.git</developerConnection>
+        <url>https://github.com/apzda/ucenter.git</url>
+        <connection>scm:git@github.com:apzda/ucenter.git</connection>
+        <developerConnection>scm:git:git@github.com:apzda/ucenter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -74,9 +74,9 @@
         </repository>
 
         <site>
-            <id>apzda-uc</id>
-            <name>Apzda UC Project</name>
-            <url>https://docs.apzda.com/uc</url>
+            <id>apzda-ucenter</id>
+            <name>Apzda Ucenter Project</name>
+            <url>https://docs.apzda.com/ucenter</url>
         </site>
     </distributionManagement>
 
