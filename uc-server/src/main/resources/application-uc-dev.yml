@@ -35,5 +35,7 @@ apzda:
 
   cloud:
     reference:
-      CaptchaService:
+      captchaService:
         svc-name: http://localhost:38082
+      configService:
+        svc-name: http://localhost:8082

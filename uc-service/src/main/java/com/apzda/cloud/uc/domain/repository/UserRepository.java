@@ -35,4 +35,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     Optional<User> getById(@NonNull Long id);
 
+    Optional<User> getByUsername(@NonNull String username);
+
 }

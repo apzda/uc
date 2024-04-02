@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -35,15 +36,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class JdbcUserDetailsService implements UserDetailsService {
 
     private final UserManager userManager;
+
     private final UserDetailsMetaRepository userDetailsMetaRepository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         val user = userManager.getUserByUsername(username);
         val status = user.getStatus();
         // 此处有三个问题要解决:
         // 1. 用户状态对authorities的影响
-        // 2. 用户存储在LDAP中时如何加载（用户启用状态等）
         // 3. tenant归属
         if (status == UserStatus.ACTIVATED) {
 
@@ -55,7 +57,6 @@ public class JdbcUserDetailsService implements UserDetailsService {
             .disabled(!(status == UserStatus.ACTIVATED || status == UserStatus.PENDING))
             .credentialsExpired(userManager.isCredentialsExpired(user.getId()))
             .password(user.getPasswd())
-            .authorities("ADMIN")
             .build());
     }
 

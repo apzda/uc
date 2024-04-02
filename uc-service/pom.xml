@@ -29,6 +29,10 @@
             <groupId>com.apzda.cloud</groupId>
             <artifactId>captcha-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
+            <artifactId>config-client</artifactId>
+        </dependency>
         <!-- gsvc -->
         <dependency>
             <groupId>com.apzda.cloud</groupId>

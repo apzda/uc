@@ -16,22 +16,14 @@
  */
 package com.apzda.cloud.uc.controller;
 
-import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
-import com.apzda.cloud.gsvc.security.token.TokenManager;
-import com.apzda.cloud.uc.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -39,44 +31,22 @@ import org.springframework.web.servlet.ModelAndView;
  * @since 1.0.0
  **/
 @Controller
-@RequestMapping("/login")
+@RequestMapping("/")
 @Slf4j
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final TokenManager tokenManager;
+    @GetMapping("${apzda.cloud.config.login-page:/login}")
+    public String login(@RequestParam(value = "redirect_to", required = false) String redirectTo,
+            @Value("${apzda.cloud.config.home-page:/}") String homePage) {
+        log.warn("redirectTo {}, homePage: {}", redirectTo, homePage);
 
-    private final AuthenticationManager authenticationManager;
-
-    private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
-    @GetMapping
-    @Transactional
-    @Modifying
-    public ModelAndView login(@RequestParam(value = "redirect_to", required = false) String redirectTo) {
-        log.warn("redirectTo {}", redirectTo);
-        //sign();
-        return null;
+        return "redirect:" + StringUtils.defaultIfBlank(redirectTo, homePage);
     }
 
-    private void sign() {
-        val username = "admin";
-        val password = "123456";
-        val authRequest = JwtAuthenticationToken.unauthenticated(username, password);
-        val authenticate = authenticationManager.authenticate(authRequest);
-        if (authenticate != null && authenticate.isAuthenticated()) {
-            val jwtToken = tokenManager.createJwtToken(authenticate);
-
-            if (authenticate instanceof JwtAuthenticationToken jwtAuthenticationToken) {
-                jwtAuthenticationToken.login(jwtToken);
-            }
-
-            val context = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
-            context.setAuthentication(authenticate);
-            SecurityContextHolder.setContext(context);
-        }
+    @GetMapping("${apzda.cloud.config.logout-path:/logout}")
+    public String logout(@Value("${apzda.cloud.config.home-page:/}") String homePage) {
+        return "redirect:" + homePage;
     }
 
 }

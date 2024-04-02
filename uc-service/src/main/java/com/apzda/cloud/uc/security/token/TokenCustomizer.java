@@ -16,9 +16,11 @@
  */
 package com.apzda.cloud.uc.security.token;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.apzda.cloud.gsvc.security.token.JwtToken;
 import com.apzda.cloud.gsvc.security.token.JwtTokenCustomizer;
+import com.apzda.cloud.uc.mapper.JwtTokenMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.core.Ordered;
 import org.springframework.security.core.Authentication;
@@ -28,10 +30,16 @@ import org.springframework.security.core.Authentication;
  * @version 1.0.0
  * @since 1.0.0
  **/
+@Slf4j
+@RequiredArgsConstructor
 public class TokenCustomizer implements JwtTokenCustomizer {
+
+    private final JwtTokenMapper tokenMapper;
+
     @Override
     public JwtToken customize(Authentication authentication, JwtToken token) {
-        val userToken = BeanUtil.copyProperties(token, UserToken.class);
+        val userToken = tokenMapper.valueOf(token);
+        log.debug("用户登录成功，开始加载元数据: {}", token.getName());
         return userToken;
     }
 
@@ -39,4 +47,5 @@ public class TokenCustomizer implements JwtTokenCustomizer {
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE;
     }
+
 }

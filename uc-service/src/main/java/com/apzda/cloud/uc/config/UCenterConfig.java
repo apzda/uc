@@ -16,10 +16,14 @@
  */
 package com.apzda.cloud.uc.config;
 
+import com.apzda.cloud.captcha.proto.CaptchaService;
+import com.apzda.cloud.config.service.SettingService;
+import com.apzda.cloud.gsvc.infra.TempStorage;
 import com.apzda.cloud.gsvc.security.authentication.DeviceAwareAuthenticationProcessingFilter;
 import com.apzda.cloud.gsvc.security.token.JwtTokenCustomizer;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
+import com.apzda.cloud.uc.mapper.JwtTokenMapper;
 import com.apzda.cloud.uc.security.JdbcUserDetailsService;
 import com.apzda.cloud.uc.security.authentication.DefaultAuthenticationProvider;
 import com.apzda.cloud.uc.security.filter.UsernameAndPasswordFilter;
@@ -45,6 +49,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 @EnableConfigurationProperties(UCenterConfigProperties.class)
 public class UCenterConfig {
+
     @Configuration
     static class MvcConfigure implements WebMvcConfigurer {
 
@@ -52,35 +57,39 @@ public class UCenterConfig {
 
     @Configuration(proxyBeanMethods = false)
     static class SecurityConfigure {
+
         @Bean
-        UserDetailsService userDetailsService(UserManager userManager, UserDetailsMetaRepository userDetailsMetaRepository) {
+        UserDetailsService userDetailsService(UserManager userManager,
+                UserDetailsMetaRepository userDetailsMetaRepository) {
             // 自定义用户明细服务实现
             return new JdbcUserDetailsService(userManager, userDetailsMetaRepository);
         }
 
         @Bean("defaultAuthenticationProvider")
         AuthenticationProvider defaultAuthenticationProvider(UserDetailsService userDetailsService,
-                                                             UserDetailsMetaRepository userDetailsMetaRepository,
-                                                             PasswordEncoder passwordEncoder) {
+                UserDetailsMetaRepository userDetailsMetaRepository, PasswordEncoder passwordEncoder,
+                CaptchaService captchaService, SettingService settingService, TempStorage tempStorage) {
             // 自定义用户名/密码认证器
-            return new DefaultAuthenticationProvider(userDetailsService, userDetailsMetaRepository, passwordEncoder);
+            return new DefaultAuthenticationProvider(userDetailsService, userDetailsMetaRepository, passwordEncoder,
+                    captchaService, settingService, tempStorage);
         }
 
         @Bean
         DeviceAwareAuthenticationProcessingFilter usernameAndPasswordFilter(AuthenticationManager authenticationManager,
-                                                                            UCenterConfigProperties uCenterConfigProperties) {
+                UCenterConfigProperties uCenterConfigProperties) {
             // 注册“用户名/密码”登录过滤器
             val usernameAndPassword = uCenterConfigProperties.getEndpoint().getOrDefault("username-password", "login");
-            log.trace("获取到配置的 username-password endpoint: {}", usernameAndPassword);
             val loginUrl = "/" + StringUtils.strip(StringUtils.defaultIfBlank(usernameAndPassword, "login"), "/");
 
             return new UsernameAndPasswordFilter(loginUrl, authenticationManager);
         }
 
         @Bean
-        JwtTokenCustomizer ucenterTokenCustomizer() {
+        JwtTokenCustomizer ucenterTokenCustomizer(JwtTokenMapper jwtTokenMapper) {
             // 处理用户登录Token
-            return new TokenCustomizer();
+            return new TokenCustomizer(jwtTokenMapper);
         }
+
     }
+
 }

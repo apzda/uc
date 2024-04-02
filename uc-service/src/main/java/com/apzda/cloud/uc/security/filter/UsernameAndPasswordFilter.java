@@ -16,9 +16,6 @@
  */
 package com.apzda.cloud.uc.security.filter;
 
-import com.apzda.cloud.captcha.proto.CaptchaService;
-import com.apzda.cloud.captcha.proto.CheckReq;
-import com.apzda.cloud.gsvc.core.GsvcContextHolder;
 import com.apzda.cloud.gsvc.security.authentication.DeviceAwareAuthenticationProcessingFilter;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import jakarta.servlet.ServletException;
@@ -35,32 +32,27 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.io.IOException;
 
 /**
+ * 用户名密码方式登录.
+ * 
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
 @Slf4j
 public class UsernameAndPasswordFilter extends DeviceAwareAuthenticationProcessingFilter {
+
     public UsernameAndPasswordFilter(String url, AuthenticationManager authenticationManager) {
         super(new AntPathRequestMatcher(url, "POST"), authenticationManager);
-        log.trace("用户名/密码登录方式的endpoint: {}", url);
+        log.debug("用户名/密码登录: POST({})", url);
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-                                                HttpServletResponse response) throws AuthenticationException,
-                                                                                     IOException,
-                                                                                     ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException, IOException, ServletException {
 
         val param = readRequestBody(request, UsernameAndPassword.class);
         val username = param.getUsername();
         val password = param.getPassword();
-        val uuid = GsvcContextHolder.header("X-CAPTCHA-UUID");
-        val id = GsvcContextHolder.header("X-CAPTCHA-ID");
-
-        log.debug("开始用户/密码认证: {}", username);
-        val captchaService = applicationContext.getBean(CaptchaService.class);
-        captchaService.check(CheckReq.newBuilder().setId(id).setUuid(uuid).build());
         val token = JwtAuthenticationToken.unauthenticated(username, password);
 
         setDetails(request, token);
@@ -70,8 +62,11 @@ public class UsernameAndPasswordFilter extends DeviceAwareAuthenticationProcessi
 
     @Data
     static class UsernameAndPassword {
-        private String password;//用户名
+
+        private String password;// 用户名
+
         private String username;// 密码
-        private String captchaCode; // 验证码
+
     }
+
 }

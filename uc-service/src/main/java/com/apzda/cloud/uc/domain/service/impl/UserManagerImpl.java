@@ -16,7 +16,6 @@
  */
 package com.apzda.cloud.uc.domain.service.impl;
 
-import com.apzda.cloud.uc.domain.entity.Oauth;
 import com.apzda.cloud.uc.domain.entity.User;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import com.apzda.cloud.uc.domain.repository.OauthRepository;
@@ -54,11 +53,8 @@ public class UserManagerImpl implements UserManager {
         if (StringUtils.isBlank(username)) {
             throw new UsernameNotFoundException("username is blank");
         }
-        val oauth = oauthRepository.findByOpenIdAndProvider(username, Oauth.SIMPLE);
-        if (oauth.isEmpty()) {
-            throw new UsernameNotFoundException(String.format("Oauth Data of user '%s' not found", username));
-        }
-        val userWrapper = userRepository.getById(oauth.get().getUid());
+        val userWrapper = userRepository.getByUsername(username);
+
         if (userWrapper.isEmpty()) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
@@ -78,7 +74,8 @@ public class UserManagerImpl implements UserManager {
             if (expiredAt < System.currentTimeMillis()) {
                 return true;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.warn("Cannot parse user({})'s credentialsExpiredAt({}) to long: {}", uid, value, e.getMessage());
             return true;
         }
@@ -94,4 +91,5 @@ public class UserManagerImpl implements UserManager {
     public List<UserMeta> getUserMetas(@NonNull Long uid, String name) {
         return userMetaRepository.findAllByUidAndName(uid, name);
     }
+
 }

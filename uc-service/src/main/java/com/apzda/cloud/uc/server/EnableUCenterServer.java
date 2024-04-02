@@ -48,6 +48,7 @@ import java.lang.annotation.*;
     "com.apzda.cloud.uc.domain",
     "com.apzda.cloud.uc.facade",
     "com.apzda.cloud.uc.filter",
+    "com.apzda.cloud.uc.mapper",
     "com.apzda.cloud.uc.service"
 })
 //@formatter:on
