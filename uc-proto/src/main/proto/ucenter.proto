@@ -9,6 +9,7 @@ option java_package = "com.apzda.cloud.uc.server.proto";
 option java_multiple_files = true;
 option java_outer_classname = "UCenterProto";
 
+option(gsvc.serviceName) = "UcenterService";
 /**
  * 用户服务
  */

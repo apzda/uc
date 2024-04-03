@@ -100,10 +100,6 @@ public class User extends AuditableEntity<Long, String, Long> implements SoftDel
     @Column(name = "status")
     private UserStatus status;
 
-    @Size(max = 10)
-    @Column(name = "realm", length = 10)
-    private String realm;
-
     @NotNull
     @Column(name = "referrer_id", nullable = false)
     private Long referrerId;
@@ -138,7 +134,7 @@ public class User extends AuditableEntity<Long, String, Long> implements SoftDel
 
     @ManyToMany
     @JoinTable(name = "uc_user_role", joinColumns = @JoinColumn(name = "uid", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role"))
+            inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role"))
     @ToString.Exclude
     private List<Role> roles;
 

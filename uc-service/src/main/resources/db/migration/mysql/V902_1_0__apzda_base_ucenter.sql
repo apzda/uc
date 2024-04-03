@@ -18,7 +18,6 @@ CREATE TABLE `uc_user`
     `gender`         ENUM ('MALE','FEMALE','MIX','UNKNOWN') DEFAULT 'UNKNOWN' COMMENT 'gender',
     `status`         ENUM ('PENDING','ACTIVATED',
         'LOCKED','DISABLED','EXPIRED')                      DEFAULT 'PENDING' COMMENT 'status of user',
-    `realm`          VARCHAR(10)      NULL                  DEFAULT NULL COMMENT 'the realm from which the user came',
     `referrer_id`    BIGINT UNSIGNED  NOT NULL              DEFAULT 0 COMMENT 'the id of Referrer',
     `referrers`      VARCHAR(256)     NULL                  DEFAULT NULL COMMENT 'the chain of referrer id seperated by /,max 20',
     `referrer_level` TINYINT UNSIGNED NOT NULL              DEFAULT '0' COMMENT 'the referrer level',
@@ -90,31 +89,6 @@ CREATE TABLE `uc_user_oauth_meta`
     `remark`     VARCHAR(255)    NULL     DEFAULT NULL COMMENT 'remark',
     UNIQUE KEY `UDX_ID_NAME` (`oauth_id`, `name`)
 ) COMMENT ='oauth meta';
-
-CREATE TABLE `uc_user_oauth_session`
-(
-    `id`            BIGINT UNSIGNED NOT NULL PRIMARY KEY,
-    `created_at`    BIGINT UNSIGNED NULL     DEFAULT NULL,
-    `created_by`    VARCHAR(32)     NULL COMMENT 'Create User Id',
-    `updated_at`    BIGINT UNSIGNED NULL     DEFAULT NULL,
-    `updated_by`    VARCHAR(32)     NULL COMMENT 'Last updated by who',
-    `deleted`       BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
-    `oauth_id`      BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'oauth id',
-    `uid`           BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'user id',
-    `grant_code`    VARCHAR(256)    NULL COMMENT 'grant code',
-    `access_token`  VARCHAR(256)    NULL COMMENT 'access token',
-    `refresh_token` VARCHAR(256)    NULL COMMENT 'refresh token',
-    `expiration`    BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'expire time',
-    `device`        VARCHAR(24)     NOT NULL COMMENT 'the device from which the user login',
-    `simulator`     BIT             NOT NULL DEFAULT FALSE COMMENT 'if the device is a simulator',
-    `ip`            VARCHAR(256)    NOT NULL COMMENT 'the ip from which the user login',
-    `extra`         LONGTEXT        NULL     DEFAULT NULL COMMENT 'extra data(prefer json format)',
-    UNIQUE KEY (`oauth_id`),
-    KEY `IDX_CTIME` (`created_at`),
-    KEY `IDX_EXPIRE` (`expiration`),
-    KEY `IDX_TOKEN` (`access_token`),
-    KEY `IDX_UID` (`uid`)
-) COMMENT ='oauth login sessions';
 
 CREATE TABLE `uc_user_security_qa`
 (
@@ -277,3 +251,9 @@ CREATE TABLE uc_role_privilege
     INDEX IDX_TENANT_ID (`tenant_id`)
 ) COMMENT = 'role privileges';
 
+INSERT INTO uc_user (id, created_at, created_by, updated_at, updated_by, deleted, username, nickname, first_name,
+                     last_name, phone_number, phone_prefix, email, passwd, avatar, gender, status, referrer_id,
+                     referrers, referrer_level, recommend_code, channel, ip, device, remark)
+VALUES (1, 1218153600, '1', 1218153600, '1', false, 'admin', 'Administrator', 'Admin', null, null, null, null,
+        '$2a$10$lda8JKIdmgV8mXLFZVTiVOgHaiQuRJXtyL55RbECrs0HtkHf4ZHy.', null, 'UNKNOWN', 'ACTIVATED', 0, null, 0, null,
+        null, '127.0.0.1', 'pc', null);

@@ -14,15 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.security.token;
+package com.apzda.cloud.uc.vo;
 
-import com.apzda.cloud.gsvc.security.token.JwtToken;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Data;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -30,17 +25,15 @@ import java.io.Serializable;
  * @since 1.0.0
  **/
 @Data
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserToken implements JwtToken, Serializable {
-    @Serial
-    private static final long serialVersionUID = -2763131228048354173L;
+public class Department {
+
+    private String id;
 
     private String name;
 
-    private String accessToken;
+    private String jobTile;
 
-    private String refreshToken;
+    private Integer jobLevel;
 
-    private String mfa;
 }

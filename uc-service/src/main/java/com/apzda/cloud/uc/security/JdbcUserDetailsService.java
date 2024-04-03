@@ -40,16 +40,10 @@ public class JdbcUserDetailsService implements UserDetailsService {
     private final UserDetailsMetaRepository userDetailsMetaRepository;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         val user = userManager.getUserByUsername(username);
         val status = user.getStatus();
-        // 此处有三个问题要解决:
-        // 1. 用户状态对authorities的影响
-        // 3. tenant归属
-        if (status == UserStatus.ACTIVATED) {
-
-        }
 
         return userDetailsMetaRepository.create(User.withUsername(user.getUsername())
             .accountLocked(status == UserStatus.LOCKED)

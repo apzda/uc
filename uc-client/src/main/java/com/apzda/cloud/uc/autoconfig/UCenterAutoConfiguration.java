@@ -43,10 +43,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  **/
 @AutoConfiguration(before = GsvcSecurityAutoConfiguration.class)
 @EnableMethodSecurity
-@Import({AccountServiceGsvc.class})
-@ComponentScan(
-    "com.apzda.cloud.uc.mapper"
-)
+@Import({ AccountServiceGsvc.class })
+@ComponentScan("com.apzda.cloud.uc.mapper")
 @Slf4j
 public class UCenterAutoConfiguration {
 
@@ -63,7 +61,8 @@ public class UCenterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    UserDetailsService userDetailsService(AccountService accountService, UserDetailsMetaRepository userDetailsMetaRepository) {
+    UserDetailsService userDetailsService(AccountService accountService,
+            UserDetailsMetaRepository userDetailsMetaRepository) {
         return new ProxiedUserDetailsService(accountService, userDetailsMetaRepository);
     }
 
@@ -72,4 +71,5 @@ public class UCenterAutoConfiguration {
     UserDetailsMetaService userDetailsMetaService(AccountService accountService, ObjectMapper objectMapper) {
         return new UserDetailsMetaServiceImpl(accountService, objectMapper);
     }
+
 }

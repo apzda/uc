@@ -33,6 +33,10 @@
             <groupId>com.apzda.cloud</groupId>
             <artifactId>config-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
+            <artifactId>audit-client</artifactId>
+        </dependency>
         <!-- gsvc -->
         <dependency>
             <groupId>com.apzda.cloud</groupId>

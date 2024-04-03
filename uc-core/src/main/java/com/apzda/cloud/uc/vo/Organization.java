@@ -14,18 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.repository;
+package com.apzda.cloud.uc.vo;
 
-import com.apzda.cloud.uc.domain.entity.OauthSession;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-@Repository
-public interface OauthSessionRepository extends CrudRepository<OauthSession, Long> {
+
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Organization {
+
+    private String id;
+
+    private String name;
+
+    private List<Department> units;
 
 }

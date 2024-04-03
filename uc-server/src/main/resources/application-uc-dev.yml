@@ -39,3 +39,7 @@ apzda:
         svc-name: http://localhost:38082
       configService:
         svc-name: http://localhost:8082
+      auditService:
+        svc-name: http://localhost:38089
+    security:
+      meta-repo: redis

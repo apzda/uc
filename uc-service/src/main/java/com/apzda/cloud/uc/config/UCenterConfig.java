@@ -16,7 +16,7 @@
  */
 package com.apzda.cloud.uc.config;
 
-import com.apzda.cloud.captcha.proto.CaptchaService;
+import com.apzda.cloud.captcha.helper.CaptchaHelper;
 import com.apzda.cloud.config.service.SettingService;
 import com.apzda.cloud.gsvc.infra.TempStorage;
 import com.apzda.cloud.gsvc.security.authentication.DeviceAwareAuthenticationProcessingFilter;
@@ -68,10 +68,10 @@ public class UCenterConfig {
         @Bean("defaultAuthenticationProvider")
         AuthenticationProvider defaultAuthenticationProvider(UserDetailsService userDetailsService,
                 UserDetailsMetaRepository userDetailsMetaRepository, PasswordEncoder passwordEncoder,
-                CaptchaService captchaService, SettingService settingService, TempStorage tempStorage) {
+                CaptchaHelper captchaHelper, SettingService settingService, TempStorage tempStorage) {
             // 自定义用户名/密码认证器
             return new DefaultAuthenticationProvider(userDetailsService, userDetailsMetaRepository, passwordEncoder,
-                    captchaService, settingService, tempStorage);
+                    captchaHelper, settingService, tempStorage);
         }
 
         @Bean

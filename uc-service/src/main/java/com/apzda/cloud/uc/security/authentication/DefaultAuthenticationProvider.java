@@ -1,12 +1,9 @@
 package com.apzda.cloud.uc.security.authentication;
 
 import cn.hutool.crypto.digest.DigestUtil;
-import com.apzda.cloud.captcha.CaptchaException;
-import com.apzda.cloud.captcha.error.CaptchaError;
-import com.apzda.cloud.captcha.error.MissingCaptcha;
+import com.apzda.cloud.audit.aop.AuditLog;
 import com.apzda.cloud.captcha.error.NeedCaptcha;
-import com.apzda.cloud.captcha.proto.CaptchaService;
-import com.apzda.cloud.captcha.proto.CheckReq;
+import com.apzda.cloud.captcha.helper.CaptchaHelper;
 import com.apzda.cloud.config.exception.SettingUnavailableException;
 import com.apzda.cloud.config.service.SettingService;
 import com.apzda.cloud.gsvc.core.GsvcContextHolder;
@@ -45,13 +42,14 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final CaptchaService captchaService;
+    private final CaptchaHelper captchaHelper;
 
     private final SettingService settingService;
 
     private final TempStorage tempStorage;
 
     @Override
+    @AuditLog(activity = "login", args = { "#returnObj.get", "成功" })
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("[{}] authenticate JwtAuthenticationToken: {}", GsvcContextHolder.getRequestId(),
                 authentication.getPrincipal());
@@ -89,9 +87,14 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
                     username);
             userDetailsMeta.remove(UserDetailsMeta.AUTHORITY_META_KEY);
             userDetailsMeta.set(authed.deviceAwareMetaKey(UserDetailsMeta.LOGIN_TIME_META_KEY), 0L);
+
+            log.trace("[{}] Reset auth temp data: {}", GsvcContextHolder.getRequestId(), username);
             data.setErrorCnt(0);
             data.setNeedCaptcha(false);
             save(username, data);
+
+            log.trace("[{}] Record oauth data and auth session", GsvcContextHolder.getRequestId());
+
             return authed;
         }
 
@@ -119,24 +122,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
             return;
         }
 
-        val uuid = GsvcContextHolder.header("X-CAPTCHA-UUID");
-        val id = GsvcContextHolder.header("X-CAPTCHA-ID");
-
-        if (StringUtils.isBlank(uuid) || StringUtils.isBlank(id)) {
-            throw new AuthenticationError(new MissingCaptcha());
-        }
-        try {
-            val checked = captchaService.check(CheckReq.newBuilder().setId(id).setUuid(uuid).build());
-            if (checked.getErrCode() != 0) {
-                throw new AuthenticationError(new CaptchaError(checked.getErrMsg()));
-            }
-        }
-        catch (CaptchaException ce) {
-            throw ce;
-        }
-        catch (Exception e) {
-            throw new AuthenticationError(new CaptchaError(e.getMessage()));
-        }
+        captchaHelper.validate();
     }
 
     @NonNull
