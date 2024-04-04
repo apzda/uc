@@ -51,6 +51,8 @@ public class UserToken implements JwtToken, Serializable {
 
     private String email;
 
+    private String status;
+
     private String accessToken;
 
     private String refreshToken;

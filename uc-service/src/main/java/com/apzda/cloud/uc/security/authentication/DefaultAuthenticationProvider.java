@@ -13,6 +13,8 @@ import com.apzda.cloud.gsvc.security.exception.AuthenticationError;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMeta;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
+import com.apzda.cloud.uc.domain.entity.Oauth;
+import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.security.AuthTempData;
 import com.apzda.cloud.uc.setting.UcSetting;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
+    private final UserManager userManager;
+
     private final UserDetailsService userDetailsService;
 
     private final UserDetailsMetaRepository userDetailsMetaRepository;
@@ -49,7 +53,8 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
     private final TempStorage tempStorage;
 
     @Override
-    @AuditLog(activity = "login", args = { "#returnObj.get", "成功" })
+    @AuditLog(activity = "login", template = "{} authenticated successfully", errorTpl = "{} authenticated failure: {}",
+            args = { "#authentication.principal", "#throwExp.message" })
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("[{}] authenticate JwtAuthenticationToken: {}", GsvcContextHolder.getRequestId(),
                 authentication.getPrincipal());
@@ -93,7 +98,11 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
             data.setNeedCaptcha(false);
             save(username, data);
 
-            log.trace("[{}] Record oauth data and auth session", GsvcContextHolder.getRequestId());
+            val oauth = new Oauth();
+            oauth.setOpenId(username);
+            oauth.setUnionId(username);
+            oauth.setProvider(Oauth.SIMPLE);
+            userManager.onAuthenticated(authed, oauth);
 
             return authed;
         }

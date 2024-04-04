@@ -16,7 +16,22 @@
  */
 package com.apzda.cloud.uc.test;
 
+import com.apzda.cloud.audit.server.EnableAuditServer;
+import com.apzda.cloud.captcha.server.EnableCaptchaServer;
+import com.apzda.cloud.config.server.EnableConfigServer;
+import com.apzda.cloud.uc.server.EnableUCenterServer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.utility.DockerImageName;
+
+import java.time.Duration;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -24,6 +39,34 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0.0
  **/
 @SpringBootApplication
+@EnableUCenterServer
+@EnableConfigServer
+@EnableAuditServer
+@EnableCaptchaServer
+@EnableJpaRepositories(basePackages = { "com.apzda.cloud.*.domain.repository" })
+@EntityScan("com.apzda.cloud.*.domain.entity")
 public class TestApp {
+
+    @TestConfiguration(proxyBeanMethods = false)
+    @ConditionalOnProperty(name = "skip.container", havingValue = "no", matchIfMissing = true)
+    static class TestConfig {
+
+        @Bean
+        @ServiceConnection(name = "redis")
+        GenericContainer<?> redis() {
+            return new GenericContainer<>(DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379)
+                .withStartupTimeout(Duration.ofMinutes(3));
+        }
+
+        @Bean
+        @ServiceConnection
+        MySQLContainer<?> mysql() {
+            return new MySQLContainer<>(DockerImageName.parse("mysql:8.0.35")).withDatabaseName("apzda_uc_db")
+                .withUsername("root")
+                .withPassword("Abc12332!")
+                .withStartupTimeout(Duration.ofMinutes(3));
+        }
+
+    }
 
 }

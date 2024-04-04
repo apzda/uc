@@ -90,6 +90,31 @@ CREATE TABLE `uc_user_oauth_meta`
     UNIQUE KEY `UDX_ID_NAME` (`oauth_id`, `name`)
 ) COMMENT ='oauth meta';
 
+CREATE TABLE `uc_user_oauth_session`
+(
+    `id`            BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    `created_at`    BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by`    VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at`    BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by`    VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`       BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `oauth_id`      BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'oauth id',
+    `uid`           BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'user id',
+    `grant_code`    VARCHAR(256)    NULL COMMENT 'grant code',
+    `access_token`  VARCHAR(256)    NULL COMMENT 'access token',
+    `refresh_token` VARCHAR(256)    NULL COMMENT 'refresh token',
+    `expiration`    BIGINT UNSIGNED NOT NULL DEFAULT '0' COMMENT 'expire time',
+    `device`        VARCHAR(24)     NOT NULL COMMENT 'the device from which the user login',
+    `simulator`     BIT             NOT NULL DEFAULT FALSE COMMENT 'if the device is a simulator',
+    `ip`            VARCHAR(256)    NOT NULL COMMENT 'the ip from which the user login',
+    `extra`         LONGTEXT        NULL     DEFAULT NULL COMMENT 'extra data(prefer json format)',
+    UNIQUE KEY (`oauth_id`),
+    KEY `IDX_CTIME` (`created_at`),
+    KEY `IDX_EXPIRE` (`expiration`),
+    KEY `IDX_TOKEN` (`access_token`),
+    KEY `IDX_UID` (`uid`)
+) COMMENT ='oauth login sessions';
+
 CREATE TABLE `uc_user_security_qa`
 (
     `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
@@ -180,8 +205,8 @@ CREATE TABLE uc_role
     `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
     `role`       VARCHAR(32)     NOT NULL COMMENT 'role',
     `name`       VARCHAR(128)    NOT NULL COMMENT 'role name',
-    `builtin`    BIT             NOT NULL COMMENT 'builtin role, cannot be deleted',
-    `provider`   VARCHAR(24)     NOT NULL COMMENT 'provider',
+    `builtin`    BIT             NOT NULL DEFAULT FALSE COMMENT 'builtin role, cannot be deleted',
+    `provider`   VARCHAR(24)     NOT NULL COMMENT 'provider(db, ldap or ad)',
     UNIQUE KEY UDX_ROLE (`role`),
     INDEX IDX_TENANT_ID (`tenant_id`)
 ) COMMENT = 'roles';
@@ -229,6 +254,7 @@ CREATE TABLE uc_privilege
     `deleted`     BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
     `name`        VARCHAR(256)    NOT NULL COMMENT 'the name of this privilege',
     `type`        VARCHAR(24)     NOT NULL COMMENT 'the type of this privilege',
+    `builtin`     BIT             NOT NULL DEFAULT FALSE COMMENT 'builtin privilege, cannot be deleted',
     `permission`  VARCHAR(128)    NOT NULL COMMENT 'the permission of this privilege',
     `extra`       TEXT            NULL COMMENT 'extra data of this privilege',
     `description` TEXT            NULL COMMENT 'the description',
@@ -246,14 +272,44 @@ CREATE TABLE uc_role_privilege
     `tenant_id`    BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
     `deleted`      BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
     `role`         VARCHAR(32)     NOT NULL COMMENT 'ROLE',
-    `privilege_id` BIGINT UNSIGNED NOT NULL,
+    `privilege_id` BIGINT UNSIGNED NOT NULL COMMENT 'privilege id',
     INDEX IDX_PRIVILEGE_ID (`privilege_id`),
     INDEX IDX_TENANT_ID (`tenant_id`)
 ) COMMENT = 'role privileges';
 
+-- username: admin
 INSERT INTO uc_user (id, created_at, created_by, updated_at, updated_by, deleted, username, nickname, first_name,
                      last_name, phone_number, phone_prefix, email, passwd, avatar, gender, status, referrer_id,
                      referrers, referrer_level, recommend_code, channel, ip, device, remark)
 VALUES (1, 1218153600, '1', 1218153600, '1', false, 'admin', 'Administrator', 'Admin', null, null, null, null,
         '$2a$10$lda8JKIdmgV8mXLFZVTiVOgHaiQuRJXtyL55RbECrs0HtkHf4ZHy.', null, 'UNKNOWN', 'ACTIVATED', 0, null, 0, null,
         null, '127.0.0.1', 'pc', null);
+-- roles
+INSERT INTO uc_role (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role, name, builtin,
+                     provider)
+VALUES (1, 1218153600, '1', 1218153600, '1', 0, false, 'sa', 'Super Administrator', true, 'db');
+INSERT INTO uc_role (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role, name, builtin,
+                     provider)
+VALUES (2, 1218153600, '1', 1218153600, '1', 0, false, 'admin', 'Administrator', true, 'db');
+INSERT INTO uc_role (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role, name, builtin,
+                     provider)
+VALUES (3, 1218153600, '1', 1218153600, '1', 0, false, 'user', 'Authenticated User', true, 'db');
+
+-- privileges
+INSERT INTO uc_privilege (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, name, type, builtin,
+                          permission, extra, description, remark)
+VALUES (1, 1218153600, '1', 11218153600, '1', 0, false, 'All Privileges', 'core', true, '*:*', null, null, null);
+
+-- privileges of role
+INSERT INTO uc_role_privilege (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role,
+                               privilege_id)
+VALUES (1, 1218153600, '1', 1218153600, '1', 0, false, 'sa', 1);
+
+-- role of user
+INSERT INTO uc_user_role (id, created_at, created_by, updated_at, updated_by, deleted, tenant_id, uid, role)
+VALUES (1, 1218153600, '1', 1218153600, '1', false, 0, 1, 'sa');
+
+
+
+
+

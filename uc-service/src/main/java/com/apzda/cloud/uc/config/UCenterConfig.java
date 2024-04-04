@@ -24,7 +24,7 @@ import com.apzda.cloud.gsvc.security.token.JwtTokenCustomizer;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.mapper.JwtTokenMapper;
-import com.apzda.cloud.uc.security.JdbcUserDetailsService;
+import com.apzda.cloud.uc.security.UserDetailsServiceImpl;
 import com.apzda.cloud.uc.security.authentication.DefaultAuthenticationProvider;
 import com.apzda.cloud.uc.security.filter.UsernameAndPasswordFilter;
 import com.apzda.cloud.uc.security.token.TokenCustomizer;
@@ -59,19 +59,20 @@ public class UCenterConfig {
     static class SecurityConfigure {
 
         @Bean
-        UserDetailsService userDetailsService(UserManager userManager,
+        UserDetailsService userDetailsService(SettingService settingService, UserManager userManager,
                 UserDetailsMetaRepository userDetailsMetaRepository) {
             // 自定义用户明细服务实现
-            return new JdbcUserDetailsService(userManager, userDetailsMetaRepository);
+            return new UserDetailsServiceImpl(userManager, userDetailsMetaRepository, settingService);
         }
 
         @Bean("defaultAuthenticationProvider")
-        AuthenticationProvider defaultAuthenticationProvider(UserDetailsService userDetailsService,
-                UserDetailsMetaRepository userDetailsMetaRepository, PasswordEncoder passwordEncoder,
-                CaptchaHelper captchaHelper, SettingService settingService, TempStorage tempStorage) {
+        AuthenticationProvider defaultAuthenticationProvider(UserManager userManager,
+                UserDetailsService userDetailsService, UserDetailsMetaRepository userDetailsMetaRepository,
+                PasswordEncoder passwordEncoder, CaptchaHelper captchaHelper, SettingService settingService,
+                TempStorage tempStorage) {
             // 自定义用户名/密码认证器
-            return new DefaultAuthenticationProvider(userDetailsService, userDetailsMetaRepository, passwordEncoder,
-                    captchaHelper, settingService, tempStorage);
+            return new DefaultAuthenticationProvider(userManager, userDetailsService, userDetailsMetaRepository,
+                    passwordEncoder, captchaHelper, settingService, tempStorage);
         }
 
         @Bean

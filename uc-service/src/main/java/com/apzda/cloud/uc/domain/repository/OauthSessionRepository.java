@@ -14,36 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.service;
+package com.apzda.cloud.uc.domain.repository;
 
-import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
-import com.apzda.cloud.uc.domain.entity.Oauth;
-import com.apzda.cloud.uc.domain.entity.User;
-import com.apzda.cloud.uc.domain.entity.UserMeta;
-import org.springframework.lang.NonNull;
-
-import java.util.List;
+import com.apzda.cloud.uc.domain.entity.OauthSession;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
  **/
-public interface UserManager {
-
-    User getUserByUsername(String username);
-
-    boolean isCredentialsExpired(Long uid);
-
-    List<UserMeta> getUserMetas(Long uid);
-
-    List<UserMeta> getUserMetas(@NonNull Long uid, String name);
-
-    /**
-     * 登录成功后续流程.
-     * @param token 认证的令牌
-     * @param oauth 三方认证信息
-     */
-    void onAuthenticated(JwtAuthenticationToken token, Oauth oauth);
+@Repository
+public interface OauthSessionRepository extends CrudRepository<OauthSession, Long> {
 
 }

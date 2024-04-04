@@ -9,9 +9,11 @@ spring:
     url: jdbc:mysql://localhost:3307/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: root
     password: Abc12332!
+  flyway:
+    enabled: true
   data:
     redis:
-      database: 1
+      database: 15
       lettuce:
         pool:
           enabled: true

@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
@@ -25,7 +26,8 @@ import static org.mockito.Mockito.when;
  **/
 @JsonTest
 @ContextConfiguration(classes = TestApp.class)
-@ComponentScan("com.apzda.cloud.uc.domain.mapper")
+@TestPropertySource(properties = { "skip.container=yes" })
+@ActiveProfiles("test")
 class DomainEntityMapperTest {
 
     @Autowired

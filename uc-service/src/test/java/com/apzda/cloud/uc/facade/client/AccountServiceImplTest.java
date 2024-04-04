@@ -1,13 +1,16 @@
 package com.apzda.cloud.uc.facade.client;
 
+import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.test.TestApp;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -19,12 +22,18 @@ import org.springframework.test.context.ContextConfiguration;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles({ "test" })
 class AccountServiceImplTest {
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserManager userManager;
+
     @Test
     void getUserInfo() {
         // given
-        System.out.println("passwordEncoder.encode(\"123456\") = " + passwordEncoder.encode("123456"));
+        String username = "admin";
+        // when
+        val user = userManager.getUserByUsername(username);
+        // then
+        assertThat(user).isNotNull();
     }
 
 }

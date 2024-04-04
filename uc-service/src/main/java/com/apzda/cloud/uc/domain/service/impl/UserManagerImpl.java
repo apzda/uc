@@ -16,9 +16,12 @@
  */
 package com.apzda.cloud.uc.domain.service.impl;
 
+import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
+import com.apzda.cloud.uc.domain.entity.Oauth;
 import com.apzda.cloud.uc.domain.entity.User;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import com.apzda.cloud.uc.domain.repository.OauthRepository;
+import com.apzda.cloud.uc.domain.repository.OauthSessionRepository;
 import com.apzda.cloud.uc.domain.repository.UserMetaRepository;
 import com.apzda.cloud.uc.domain.repository.UserRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
@@ -46,6 +49,8 @@ public class UserManagerImpl implements UserManager {
 
     private final OauthRepository oauthRepository;
 
+    private final OauthSessionRepository oauthSessionRepository;
+
     private final UserMetaRepository userMetaRepository;
 
     @Override
@@ -53,6 +58,7 @@ public class UserManagerImpl implements UserManager {
         if (StringUtils.isBlank(username)) {
             throw new UsernameNotFoundException("username is blank");
         }
+        // todo
         val userWrapper = userRepository.getByUsername(username);
 
         if (userWrapper.isEmpty()) {
@@ -90,6 +96,13 @@ public class UserManagerImpl implements UserManager {
 
     public List<UserMeta> getUserMetas(@NonNull Long uid, String name) {
         return userMetaRepository.findAllByUidAndName(uid, name);
+    }
+
+    @Override
+    public void onAuthenticated(JwtAuthenticationToken token, Oauth oauth) {
+        // 查看原信息
+        val origOauth = oauthRepository.findByOpenIdAndProvider(oauth.getOpenId(), oauth.getProvider());
+
     }
 
 }

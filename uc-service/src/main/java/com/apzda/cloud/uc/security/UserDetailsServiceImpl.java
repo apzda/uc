@@ -16,6 +16,7 @@
  */
 package com.apzda.cloud.uc.security;
 
+import com.apzda.cloud.config.service.SettingService;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
@@ -33,11 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  **/
 @RequiredArgsConstructor
-public class JdbcUserDetailsService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserManager userManager;
 
     private final UserDetailsMetaRepository userDetailsMetaRepository;
+
+    private final SettingService settingService;
 
     @Override
     @Transactional(readOnly = true)
