@@ -19,8 +19,8 @@ package com.apzda.cloud.uc;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.digest.MD5;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
-import com.apzda.cloud.uc.proto.AccountService;
 import com.apzda.cloud.uc.proto.Request;
+import com.apzda.cloud.uc.proto.UcenterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -40,7 +40,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class ProxiedUserDetailsService implements UserDetailsService {
 
-    private final AccountService accountService;
+    private final UcenterService ucenterService;
 
     private final UserDetailsMetaRepository userDetailsMetaRepository;
 
@@ -50,7 +50,7 @@ public class ProxiedUserDetailsService implements UserDetailsService {
 
         try {
             // todo 优化用户加载, 应该总是返回null才对！！！
-            val userInfo = accountService.getUserInfo(Request.newBuilder().setUsername(username).build());
+            val userInfo = ucenterService.getUserInfo(Request.newBuilder().setUsername(username).build());
             if (userInfo.getErrCode() == 0) {
                 user = new User(username, userInfo.getPassword(), userInfo.getEnabled(),
                         userInfo.getAccountNonExpired(), userInfo.getCredentialsNonExpired(),

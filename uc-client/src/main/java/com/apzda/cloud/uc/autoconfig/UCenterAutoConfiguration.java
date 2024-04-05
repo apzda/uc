@@ -24,8 +24,8 @@ import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
 import com.apzda.cloud.uc.ProxiedUserDetailsService;
 import com.apzda.cloud.uc.UserDetailsMetaServiceImpl;
 import com.apzda.cloud.uc.context.UCenterTenantManager;
-import com.apzda.cloud.uc.proto.AccountService;
-import com.apzda.cloud.uc.proto.AccountServiceGsvc;
+import com.apzda.cloud.uc.proto.UcenterService;
+import com.apzda.cloud.uc.proto.UcenterServiceGsvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -43,7 +43,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  **/
 @AutoConfiguration(before = GsvcSecurityAutoConfiguration.class)
 @EnableMethodSecurity
-@Import({ AccountServiceGsvc.class })
+@Import({ UcenterServiceGsvc.class })
 @ComponentScan("com.apzda.cloud.uc.mapper")
 @Slf4j
 public class UCenterAutoConfiguration {
@@ -61,15 +61,15 @@ public class UCenterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    UserDetailsService userDetailsService(AccountService accountService,
+    UserDetailsService userDetailsService(UcenterService ucenterService,
             UserDetailsMetaRepository userDetailsMetaRepository) {
-        return new ProxiedUserDetailsService(accountService, userDetailsMetaRepository);
+        return new ProxiedUserDetailsService(ucenterService, userDetailsMetaRepository);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    UserDetailsMetaService userDetailsMetaService(AccountService accountService, ObjectMapper objectMapper) {
-        return new UserDetailsMetaServiceImpl(accountService, objectMapper);
+    UserDetailsMetaService userDetailsMetaService(UcenterService ucenterService, ObjectMapper objectMapper) {
+        return new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
     }
 
 }

@@ -18,7 +18,7 @@ package com.apzda.cloud.uc.server;
 
 import com.apzda.cloud.uc.config.DruidConfig;
 import com.apzda.cloud.uc.config.UCenterConfig;
-import com.apzda.cloud.uc.proto.AccountServiceGsvc;
+import com.apzda.cloud.uc.proto.UcenterServiceGsvc;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -39,7 +39,7 @@ import java.lang.annotation.*;
 @Import({
     UCenterConfig.class,
     DruidConfig.class,
-    AccountServiceGsvc.class
+    UcenterServiceGsvc.class
 })
 @ComponentScan(basePackages = {
     "com.apzda.cloud.uc.controller",

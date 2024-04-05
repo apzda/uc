@@ -9,7 +9,7 @@ option java_package = "com.apzda.cloud.uc.proto";
 option java_multiple_files = true;
 option java_outer_classname = "ClientProto";
 
-option(gsvc.serviceName) = "UcenterService";
+// option(gsvc.serviceName) = "UcenterService";
 
 enum MetaValueType {
   STRING = 0;
@@ -89,7 +89,7 @@ message Request {
   optional bool all = 3;
 }
 
-service AccountService {
+service UcenterService {
   rpc getUserInfo(Request) returns (UserInfo);
   rpc getMetas(Request) returns (UserMetaResp);
   rpc getAuthorities(Request) returns (AuthorityResp);

@@ -39,9 +39,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AccountServiceImpl implements AccountService {
+public class UcenterServiceImpl implements UcenterService {
 
     private final UserManager userManager;
+
     private final MetaTypeMapper metaTypeMapper;
 
     @Override
@@ -67,7 +68,8 @@ public class AccountServiceImpl implements AccountService {
                 val authorities = getAuthorities(request);
                 builder.addAllAuthority(authorities.getAuthorityList());
             }
-        } catch (UsernameNotFoundException e) {
+        }
+        catch (UsernameNotFoundException e) {
             builder.setErrCode(404);
             builder.setErrMsg("User not found");
         }
@@ -84,7 +86,8 @@ public class AccountServiceImpl implements AccountService {
             List<UserMeta> metas;
             if (StringUtils.isBlank(metaName)) {
                 metas = userManager.getUserMetas(user.getId());
-            } else {
+            }
+            else {
                 metas = userManager.getUserMetas(user.getId(), metaName);
             }
 
@@ -96,7 +99,8 @@ public class AccountServiceImpl implements AccountService {
                 return b.build();
             }).toList();
             builder.addAllMeta(collect);
-        } catch (UsernameNotFoundException e) {
+        }
+        catch (UsernameNotFoundException e) {
             builder.setErrCode(404);
             builder.setErrMsg(e.getMessage());
         }
@@ -116,4 +120,5 @@ public class AccountServiceImpl implements AccountService {
 
         return builder.build();
     }
+
 }

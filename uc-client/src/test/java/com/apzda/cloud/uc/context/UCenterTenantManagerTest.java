@@ -6,8 +6,8 @@ import com.apzda.cloud.gsvc.security.config.GsvcSecurityAutoConfiguration;
 import com.apzda.cloud.uc.TestApp;
 import com.apzda.cloud.uc.autoconfig.UCenterAutoConfiguration;
 import com.apzda.cloud.uc.mapper.CurrentUserMapper;
-import com.apzda.cloud.uc.proto.AccountService;
 import com.apzda.cloud.uc.proto.Request;
+import com.apzda.cloud.uc.proto.UcenterService;
 import com.apzda.cloud.uc.proto.UserInfo;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -32,19 +32,19 @@ import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @ContextConfiguration(classes = TestApp.class)
-@ImportAutoConfiguration({
-    UCenterAutoConfiguration.class,
-    GsvcSecurityAutoConfiguration.class,
-    SecurityAutoConfiguration.class
-})
+@ImportAutoConfiguration({ UCenterAutoConfiguration.class, GsvcSecurityAutoConfiguration.class,
+        SecurityAutoConfiguration.class })
 @ActiveProfiles("test")
 class UCenterTenantManagerTest {
+
     @Autowired
     private UserDetailsService userDetailsService;
+
     @Autowired
     private CurrentUserMapper currentUserMapper;
+
     @MockBean
-    private AccountService accountService;
+    private UcenterService ucenterService;
 
     @Test
     void should_be_ok() {
@@ -58,7 +58,7 @@ class UCenterTenantManagerTest {
         builder.setAccountNonLocked(true);
         builder.setAccountNonExpired(true);
         builder.setCredentialsNonExpired(true);
-        given(accountService.getUserInfo(any(Request.class))).willReturn(builder.build());
+        given(ucenterService.getUserInfo(any(Request.class))).willReturn(builder.build());
 
         // when
         val user = userDetailsService.loadUserByUsername("gsvc");
@@ -66,7 +66,7 @@ class UCenterTenantManagerTest {
         // then
         assertThat(user).isNotNull();
         assertThat(user.getUsername()).isEqualTo("gsvc");
-        //assertThat(user.getAuthorities().size()).isEqualTo(1);
+        // assertThat(user.getAuthorities().size()).isEqualTo(1);
     }
 
     @Test
@@ -98,4 +98,5 @@ class UCenterTenantManagerTest {
         assertThat(user.getApp()).isEqualTo("gsvc");
         assertThat(user.hasDevice()).isFalse();
     }
+
 }

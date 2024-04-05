@@ -18,8 +18,8 @@ package com.apzda.cloud.uc;
 
 import com.apzda.cloud.gsvc.core.GsvcContextHolder;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
-import com.apzda.cloud.uc.proto.AccountService;
 import com.apzda.cloud.uc.proto.Request;
+import com.apzda.cloud.uc.proto.UcenterService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,17 +44,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
-    private final AccountService accountService;
+
+    private final UcenterService ucenterService;
+
     private final ObjectMapper objectMapper;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(@NonNull UserDetails userDetails) {
         val username = userDetails.getUsername();
-        val authorities = accountService.getAuthorities(Request.newBuilder().setUsername(username).build());
+        val authorities = ucenterService.getAuthorities(Request.newBuilder().setUsername(username).build());
 
         if (authorities.getErrCode() == 0) {
             if (authorities.getAuthorityCount() > 0) {
-                return authorities.getAuthorityList().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+                return authorities.getAuthorityList()
+                    .stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
             }
         }
 
@@ -63,9 +68,10 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
 
     @Override
     @NonNull
-    public <R> Optional<R> getMetaData(@NonNull UserDetails userDetails, @NonNull String key, @NonNull Class<R> rClass) {
+    public <R> Optional<R> getMetaData(@NonNull UserDetails userDetails, @NonNull String key,
+            @NonNull Class<R> rClass) {
         val username = userDetails.getUsername();
-        val metas = accountService.getMetas(Request.newBuilder().setUsername(username).setMetaName(key).build());
+        val metas = ucenterService.getMetas(Request.newBuilder().setUsername(username).setMetaName(key).build());
         if (metas.getErrCode() == 0 && metas.getMetaCount() > 0) {
             val meta = metas.getMeta(0);
             val value = meta.getValue();
@@ -79,7 +85,8 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
                     case OBJECT -> objectMapper.readValue(value, rClass);
                     default -> rClass.cast(value);
                 });
-            } catch (JsonProcessingException e) {
+            }
+            catch (JsonProcessingException e) {
                 log.warn("[{}] Cannot parse meta value: {} - {}", GsvcContextHolder.getRequestId(), key, value);
             }
         }
@@ -88,9 +95,10 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
 
     @Override
     @NonNull
-    public <R> Optional<R> getMultiMetaData(@NonNull UserDetails userDetails, @NonNull String key, @NonNull TypeReference<R> typeReference) {
+    public <R> Optional<R> getMultiMetaData(@NonNull UserDetails userDetails, @NonNull String key,
+            @NonNull TypeReference<R> typeReference) {
         val username = userDetails.getUsername();
-        val metas = accountService.getMetas(Request.newBuilder().setUsername(username).setMetaName(key).build());
+        val metas = ucenterService.getMetas(Request.newBuilder().setUsername(username).setMetaName(key).build());
 
         if (metas.getErrCode() == 0 && metas.getMetaCount() > 0) {
             val meta = metas.getMeta(0);
@@ -101,10 +109,13 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
                     case OBJECT -> objectMapper.readValue(value, typeReference);
                     default -> objectMapper.readValue(String.format("[%s]", value), typeReference);
                 });
-            } catch (JsonProcessingException e) {
-                log.warn("[{}] Cannot parse meta value: {} - {}", GsvcContextHolder.getRequestId(), key, meta.getValue());
+            }
+            catch (JsonProcessingException e) {
+                log.warn("[{}] Cannot parse meta value: {} - {}", GsvcContextHolder.getRequestId(), key,
+                        meta.getValue());
             }
         }
         return Optional.empty();
     }
+
 }
