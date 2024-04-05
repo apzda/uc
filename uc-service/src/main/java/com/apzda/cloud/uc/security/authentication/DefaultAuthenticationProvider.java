@@ -54,7 +54,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     @AuditLog(activity = "login", template = "{} authenticated successfully", errorTpl = "{} authenticated failure: {}",
-            args = { "#authentication.principal", "#throwExp.message" })
+            args = { "#authentication.principal", "#throwExp?.message" })
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("[{}] authenticate JwtAuthenticationToken: {}", GsvcContextHolder.getRequestId(),
                 authentication.getPrincipal());
