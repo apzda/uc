@@ -32,6 +32,7 @@ message Department {
   optional string desc = 3;
   optional string icon = 4;
   optional string job_title = 5;
+  optional uint32 job_level = 6;
 }
 
 message Organization {
@@ -40,7 +41,8 @@ message Organization {
   optional string desc = 3;
   optional string icon = 4;
   optional string job_title = 5;
-  repeated Department department = 6;
+  optional uint32 job_level = 6;
+  repeated Department department = 7;
 }
 
 message UserInfo {

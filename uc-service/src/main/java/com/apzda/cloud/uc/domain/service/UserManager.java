@@ -33,9 +33,9 @@ public interface UserManager {
 
     User getUserByUsername(String username);
 
-    boolean isCredentialsExpired(Long uid);
+    boolean isCredentialsExpired(@NonNull Long uid);
 
-    List<UserMeta> getUserMetas(Long uid);
+    List<UserMeta> getUserMetas(@NonNull Long uid);
 
     List<UserMeta> getUserMetas(@NonNull Long uid, String name);
 

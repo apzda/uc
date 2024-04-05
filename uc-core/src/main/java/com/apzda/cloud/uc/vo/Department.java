@@ -32,6 +32,10 @@ public class Department {
 
     private String name;
 
+    private String desc;
+
+    private String icon;
+
     private String jobTile;
 
     private Integer jobLevel;

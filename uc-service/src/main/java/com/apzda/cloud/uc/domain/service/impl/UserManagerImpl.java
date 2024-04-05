@@ -68,7 +68,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public boolean isCredentialsExpired(Long uid) {
+    public boolean isCredentialsExpired(@NonNull Long uid) {
         val credentialsExpiredAt = userMetaRepository.getByUidAndName(uid, UserMeta.CREDENTIALS_EXPIRED_AT);
         if (credentialsExpiredAt.isEmpty()) {
             return false;

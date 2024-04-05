@@ -35,6 +35,12 @@ public class Organization {
 
     private String name;
 
+    private String desc;
+
+    private String icon;
+
+    private String jobTitle;
+
     private List<Department> units;
 
 }

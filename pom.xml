@@ -19,11 +19,11 @@
 
     <modules>
         <module>uc-client</module>
-        <module>uc-proto</module>
         <module>uc-service</module>
         <module>uc-core</module>
-        <module>uc-client-proto</module>
+        <module>uc-proto</module>
         <module>uc-server</module>
+        <module>uc-i18n</module>
     </modules>
 
     <properties>
@@ -90,12 +90,12 @@
             </dependency>
             <dependency>
                 <groupId>com.apzda.cloud</groupId>
-                <artifactId>uc-proto</artifactId>
+                <artifactId>uc-i18n</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.apzda.cloud</groupId>
-                <artifactId>uc-client-proto</artifactId>
+                <artifactId>uc-proto</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>

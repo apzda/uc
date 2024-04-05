@@ -41,6 +41,7 @@ import java.util.Collections;
 public class ProxiedUserDetailsService implements UserDetailsService {
 
     private final AccountService accountService;
+
     private final UserDetailsMetaRepository userDetailsMetaRepository;
 
     @Override
@@ -48,20 +49,24 @@ public class ProxiedUserDetailsService implements UserDetailsService {
         User user;
 
         try {
+            // todo 优化用户加载, 应该总是返回null才对！！！
             val userInfo = accountService.getUserInfo(Request.newBuilder().setUsername(username).build());
             if (userInfo.getErrCode() == 0) {
-                user = new User(username, userInfo.getPassword(), userInfo.getEnabled(), userInfo.getAccountNonExpired(),
-                    userInfo.getCredentialsNonExpired(), userInfo.getAccountNonLocked(), Collections.emptyList());
-            } else if (userInfo.getErrCode() == 404) {
+                user = new User(username, userInfo.getPassword(), userInfo.getEnabled(),
+                        userInfo.getAccountNonExpired(), userInfo.getCredentialsNonExpired(),
+                        userInfo.getAccountNonLocked(), Collections.emptyList());
+            }
+            else if (userInfo.getErrCode() == 404) {
                 throw new UsernameNotFoundException(username);
-            } else {
+            }
+            else {
                 throw new IllegalStateException(userInfo.getErrMsg());
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error("Cannot load user info({}), use disabled anonymous instead - {}", username, e.getMessage());
-            user = new User("anonymous", MD5.create().digestHex(DateUtil.now()),
-                false, true, true,
-                true, Collections.emptyList());
+            user = new User("anonymous", MD5.create().digestHex(DateUtil.now()), false, true, true, true,
+                    Collections.emptyList());
         }
 
         return userDetailsMetaRepository.create(user);
