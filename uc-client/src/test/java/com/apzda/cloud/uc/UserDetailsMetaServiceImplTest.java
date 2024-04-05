@@ -29,7 +29,7 @@ import static org.mockito.BDDMockito.given;
 @ActiveProfiles("test")
 class UserDetailsMetaServiceImplTest {
     @MockBean
-    private AccountService accountService;
+    private UcenterService ucenterService;
     @MockBean
     private IServiceCaller serviceCaller;
 
@@ -45,9 +45,9 @@ class UserDetailsMetaServiceImplTest {
 
         val builder = UserMetaResp.newBuilder();
         builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.OBJECT).setName("whatever").setValue(objectMapper.writeValueAsString(cu)).build());
-        given(accountService.getMetas(any(Request.class))).willReturn(builder.build());
+        given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
-        val userDetailsMetaService = new UserDetailsMetaServiceImpl(accountService, objectMapper);
+        val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
 
         // when
         val value = userDetailsMetaService.getMetaData(user, "whatever", CurrentUser.class);
@@ -64,9 +64,9 @@ class UserDetailsMetaServiceImplTest {
 
         val builder = UserMetaResp.newBuilder();
         builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.STRING).setName("whatever").setValue("string").build());
-        given(accountService.getMetas(any(Request.class))).willReturn(builder.build());
+        given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
-        val userDetailsMetaService = new UserDetailsMetaServiceImpl(accountService, objectMapper);
+        val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
 
         // when
         val value = userDetailsMetaService.getMetaData(user, "whatever", String.class);
@@ -83,9 +83,9 @@ class UserDetailsMetaServiceImplTest {
 
         val builder = UserMetaResp.newBuilder();
         builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.LONG).setName("whatever").setValue("1000").build());
-        given(accountService.getMetas(any(Request.class))).willReturn(builder.build());
+        given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
-        val userDetailsMetaService = new UserDetailsMetaServiceImpl(accountService, objectMapper);
+        val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
 
         // when
         val value = userDetailsMetaService.getMetaData(user, "whatever", Long.class);
@@ -103,9 +103,9 @@ class UserDetailsMetaServiceImplTest {
 
         val builder = UserMetaResp.newBuilder();
         builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.STRING).setName("whatever").setValue("1000").build());
-        given(accountService.getMetas(any(Request.class))).willReturn(builder.build());
+        given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
-        val userDetailsMetaService = new UserDetailsMetaServiceImpl(accountService, objectMapper);
+        val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
 
         val typeReference = new TypeReference<Collection<String>>() {
         };
@@ -127,9 +127,9 @@ class UserDetailsMetaServiceImplTest {
 
         val builder = UserMetaResp.newBuilder();
         builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.LONG).setName("whatever").setValue("1000").build());
-        given(accountService.getMetas(any(Request.class))).willReturn(builder.build());
+        given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
-        val userDetailsMetaService = new UserDetailsMetaServiceImpl(accountService, objectMapper);
+        val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
 
         val typeReference = new TypeReference<Collection<Long>>() {
         };

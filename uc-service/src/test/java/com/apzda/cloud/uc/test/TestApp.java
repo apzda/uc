@@ -16,17 +16,11 @@
  */
 package com.apzda.cloud.uc.test;
 
-import com.apzda.cloud.audit.server.EnableAuditServer;
-import com.apzda.cloud.captcha.server.EnableCaptchaServer;
-import com.apzda.cloud.config.server.EnableConfigServer;
-import com.apzda.cloud.uc.server.EnableUCenterServer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -39,12 +33,6 @@ import java.time.Duration;
  * @since 1.0.0
  **/
 @SpringBootApplication
-@EnableUCenterServer
-@EnableConfigServer
-@EnableAuditServer
-@EnableCaptchaServer
-@EnableJpaRepositories(basePackages = { "com.apzda.cloud.*.domain.repository" })
-@EntityScan("com.apzda.cloud.*.domain.entity")
 public class TestApp {
 
     @TestConfiguration(proxyBeanMethods = false)

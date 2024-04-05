@@ -1,6 +1,7 @@
 package com.apzda.cloud.uc.facade.client;
 
 import com.apzda.cloud.uc.domain.service.UserManager;
+import com.apzda.cloud.uc.server.EnableUCenterServer;
 import com.apzda.cloud.uc.test.TestApp;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @version 1.0.0
  * @since 1.0.0
  **/
+@EnableUCenterServer
 @SpringBootTest
 @ContextConfiguration(classes = TestApp.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
