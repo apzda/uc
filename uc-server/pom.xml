@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>uc-server</artifactId>
-    <name>Demo Server</name>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>

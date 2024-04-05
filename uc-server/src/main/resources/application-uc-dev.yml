@@ -12,11 +12,11 @@ spring:
     password: Abc12332!
     druid:
       initial-size: 5
-
-  flyway:
-    enabled: false
+  jpa:
+    show-sql: true
   data:
     redis:
+      host: localhost
       database: 1
       lettuce:
         pool:
@@ -24,15 +24,10 @@ spring:
 
 logging:
   level:
-    com.apzda.cloud: debug
+    com.apzda.cloud: trace
     web: info
 
 apzda:
-  ucenter:
-    server:
-      endpoint:
-        username-password: /uc/login
-
   cloud:
     reference:
       captchaService:

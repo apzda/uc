@@ -3,7 +3,27 @@ server:
 
 spring:
   application:
-    name: ucenterService
+    name: ucenter-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: Abc12332!
+  data:
+    redis:
+      database: 1
+      lettuce:
+        pool:
+          enabled: true
+      host: redis
   jpa:
     hibernate:
       ddl-auto: validate
+  flyway:
+    enabled: false
+
+apzda:
+  ucenter:
+    server:
+      endpoint:
+        username-password: /uc/login

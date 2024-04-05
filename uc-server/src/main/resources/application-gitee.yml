@@ -13,28 +13,17 @@ spring:
     url: jdbc:mysql://${spring.datasource.host}:3306/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: ENC(amxsb/5GE92W7SmwbvRLQCN8GGnnwe1ZgMMM7UvbBC8N1uz31oMiWe/O9qWEDwLX)
     password: ENC(ft2+PBi1ZCeIoD6gpiOHgmTf+AX4VmuqjUXQz1iyflzVQehpQmSGXR0rXw6hby1c)
-
-  flyway:
-    enabled: false
+  jpa:
+    show-sql: true
   data:
     redis:
       database: 1
       lettuce:
         pool:
           enabled: true
+      host: localhost
 
 logging:
   level:
-    com.apzda.cloud: debug
+    com.apzda.cloud: trace
     web: info
-
-apzda:
-  ucenter:
-    server:
-      endpoint:
-        username-password: /uc/login
-
-  cloud:
-    reference:
-      CaptchaService:
-        svc-name: http://localhost:38082
