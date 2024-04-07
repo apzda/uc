@@ -33,9 +33,9 @@ import lombok.ToString;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_user_mfa")
+@ToString
 public class UserMfa extends AuditableEntity<Long, String, Long> implements SoftDeletable {
 
     @Id
@@ -46,8 +46,10 @@ public class UserMfa extends AuditableEntity<Long, String, Long> implements Soft
     private boolean deleted;
 
     @NotNull
-    @Column(name = "uid", nullable = false)
-    private Long uid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    @ToString.Exclude
+    private User user;
 
     @Size(max = 128)
     @NotNull

@@ -26,7 +26,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -40,10 +43,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserDetailsMetaRepository userDetailsMetaRepository;
 
-    private final SettingService settingService;
-
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.NESTED)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         val user = userManager.getUserByUsername(username);
         val status = user.getStatus();
@@ -52,7 +53,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             .accountLocked(status == UserStatus.LOCKED)
             .accountExpired(status == UserStatus.EXPIRED)
             .disabled(!(status == UserStatus.ACTIVATED || status == UserStatus.PENDING))
-            .credentialsExpired(userManager.isCredentialsExpired(user.getId()))
+            .credentialsExpired(userManager.isCredentialsExpired(user))
             .password(user.getPasswd())
             .build());
     }

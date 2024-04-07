@@ -6,7 +6,6 @@ import com.apzda.cloud.captcha.error.NeedCaptcha;
 import com.apzda.cloud.captcha.helper.CaptchaHelper;
 import com.apzda.cloud.config.exception.SettingUnavailableException;
 import com.apzda.cloud.config.service.SettingService;
-import com.apzda.cloud.gsvc.core.GsvcContextHolder;
 import com.apzda.cloud.gsvc.error.ServiceError;
 import com.apzda.cloud.gsvc.infra.TempStorage;
 import com.apzda.cloud.gsvc.security.exception.AuthenticationError;
@@ -23,6 +22,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -56,8 +56,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
     @AuditLog(activity = "login", template = "{} authenticated successfully", errorTpl = "{} authenticated failure: {}",
             args = { "#authentication.principal", "#throwExp?.message" })
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.debug("[{}] authenticate JwtAuthenticationToken: {}", GsvcContextHolder.getRequestId(),
-                authentication.getPrincipal());
+        log.debug("Start Authenticate Authentication: {}", authentication);
 
         val credentials = authentication.getCredentials();
         val principal = authentication.getPrincipal();
@@ -88,16 +87,16 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
             val authed = JwtAuthenticationToken.authenticated(userDetailsMeta, password);
             // bookmark: Clear Authorities, cause to reload authorities from
             // UserDetailsMetaService
-            log.trace("[{}] Clear user's authorities and last login time: {}", GsvcContextHolder.getRequestId(),
-                    username);
+            log.trace("Clear user's authorities and last login time: {}", username);
             userDetailsMeta.remove(UserDetailsMeta.AUTHORITY_META_KEY);
             userDetailsMeta.set(authed.deviceAwareMetaKey(UserDetailsMeta.LOGIN_TIME_META_KEY), 0L);
 
-            log.trace("[{}] Reset auth temp data: {}", GsvcContextHolder.getRequestId(), username);
+            log.trace("Reset auth temp data: {}", username);
             data.setErrorCnt(0);
             data.setNeedCaptcha(false);
             save(username, data);
 
+            // this is a transit Oauth Object!!!
             val oauth = new Oauth();
             oauth.setOpenId(username);
             oauth.setUnionId(username);
@@ -122,7 +121,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return JwtAuthenticationToken.class.isAssignableFrom(authentication);
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     private void validateCaptcha(@NonNull AuthTempData data, @NonNull UcSetting ucSetting) {

@@ -21,6 +21,7 @@ import com.apzda.cloud.uc.domain.entity.Oauth;
 import com.apzda.cloud.uc.domain.entity.User;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import java.util.List;
 
@@ -33,17 +34,17 @@ public interface UserManager {
 
     User getUserByUsername(String username);
 
-    boolean isCredentialsExpired(@NonNull Long uid);
+    boolean isCredentialsExpired(@NonNull User user);
 
-    List<UserMeta> getUserMetas(@NonNull Long uid);
-
-    List<UserMeta> getUserMetas(@NonNull Long uid, String name);
+    List<UserMeta> getUserMetas(@NonNull User user, String name);
 
     /**
      * 登录成功后续流程.
      * @param token 认证的令牌
      * @param oauth 三方认证信息
      */
-    void onAuthenticated(JwtAuthenticationToken token, Oauth oauth);
+    void onAuthenticated(AbstractAuthenticationToken token, Oauth oauth);
+
+    void createOauthSession(JwtAuthenticationToken token);
 
 }

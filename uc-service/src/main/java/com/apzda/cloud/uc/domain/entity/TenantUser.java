@@ -33,9 +33,9 @@ import lombok.ToString;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_tenant_user")
+@ToString
 public class TenantUser extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
 
     @Id

@@ -26,11 +26,15 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -39,9 +43,10 @@ import java.util.List;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_role")
+@Slf4j
+@ToString
 public class Role extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
 
     @Id
@@ -74,42 +79,50 @@ public class Role extends AuditableEntity<Long, String, Long> implements Tenanta
     @Column(name = "provider", nullable = false, length = 24)
     private String provider;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "uc_role_privilege", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
-        inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "uc_role_privilege", joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "privilege_id"))
     @ToString.Exclude
     private List<Privilege> privileges;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "uc_role_children", joinColumns = @JoinColumn(name = "role", referencedColumnName = "role"),
-        inverseJoinColumns = @JoinColumn(name = "child", referencedColumnName = "role"))
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "uc_role_children", joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "child_id"))
     @ToString.Exclude
     private List<Role> children;
 
-    public List<Role> getAllChildren() {
+    @NonNull
+    public Collection<Role> allChildren() {
         val roles = new HashSet<Role>();
         if (!CollectionUtils.isEmpty(getChildren())) {
-            for (Role child : getChildren()) {
-                if (!roles.contains(child)) {
-                    roles.add(child);
-                    val allChildren = child.getAllChildren();
-                    if (!CollectionUtils.isEmpty(allChildren)) {
-
-                    }
+            for (Role role : getChildren()) {
+                if (!roles.contains(role)) {
+                    roles.add(role);
+                    val children = role.allChildren();
+                    roles.addAll(children);
+                    log.trace("Merged Role({}) and its children: {}", role, children);
                 }
             }
         }
-        return roles.stream().toList();
+        return roles;
     }
 
     @Override
     public int hashCode() {
-        return role.hashCode();
+        if (id != null) {
+            return id.hashCode();
+        }
+        return -1;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || (obj instanceof Role && ((Role) obj).getRole().equals(role));
+        if (!(obj instanceof Role)) {
+            return false;
+        }
+        val r = ((Role) obj).getRole();
+        val tid = ((Role) obj).getTenantId();
+        return this == obj || (Objects.equals(r, role) && Objects.equals(tid, tenantId));
     }
 
 }

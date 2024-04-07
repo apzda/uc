@@ -52,7 +52,7 @@ CREATE TABLE `uc_user_meta`
     UNIQUE KEY `UDX_USER_META` (`uid`, `name`)
 ) COMMENT ='User meta';
 
-CREATE TABLE `uc_user_oauth`
+CREATE TABLE `uc_oauth`
 (
     `id`              BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     `created_at`      BIGINT UNSIGNED NULL     DEFAULT NULL,
@@ -64,18 +64,18 @@ CREATE TABLE `uc_user_oauth`
     `provider`        VARCHAR(24)     NOT NULL COMMENT 'OpenID Provider',
     `open_id`         VARCHAR(256)    NOT NULL COMMENT 'OpenID',
     `union_id`        VARCHAR(256)    NOT NULL COMMENT 'UnionID',
-    `login_time`      BIGINT UNSIGNED NOT NULL COMMENT 'first login time',
-    `device`          VARCHAR(24)     NOT NULL COMMENT 'first login device',
-    `ip`              VARCHAR(256)    NOT NULL COMMENT 'the ip address(v4 or v6) from which the user login',
-    `last_login_time` BIGINT UNSIGNED NOT NULL COMMENT 'last login time',
-    `last_device`     VARCHAR(24)     NOT NULL COMMENT 'last login device',
-    `last_ip`         VARCHAR(256)    NOT NULL COMMENT 'the last ip address(v4 or v6) from which the user login',
+    `login_time`      BIGINT UNSIGNED COMMENT 'first login time',
+    `device`          VARCHAR(24) COMMENT 'first login device',
+    `ip`              VARCHAR(256) COMMENT 'the ip address(v4 or v6) from which the user login',
+    `last_login_time` BIGINT UNSIGNED COMMENT 'last login time',
+    `last_device`     VARCHAR(24) COMMENT 'last login device',
+    `last_ip`         VARCHAR(256) COMMENT 'the last ip address(v4 or v6) from which the user login',
     `remark`          VARCHAR(255)    NULL     DEFAULT NULL COMMENT 'remark',
     UNIQUE KEY `UDX_TYPE_ID` (`provider`, `union_id`),
     INDEX `FK_USER_ID` (`uid` asc)
 ) COMMENT ='Oauth2.0 grants';
 
-CREATE TABLE `uc_user_oauth_meta`
+CREATE TABLE `uc_oauth_meta`
 (
     `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE `uc_user_oauth_meta`
     UNIQUE KEY `UDX_ID_NAME` (`oauth_id`, `name`)
 ) COMMENT ='oauth meta';
 
-CREATE TABLE `uc_user_oauth_session`
+CREATE TABLE `uc_oauth_session`
 (
     `id`            BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     `created_at`    BIGINT UNSIGNED NULL     DEFAULT NULL,
@@ -194,6 +194,130 @@ CREATE TABLE `uc_tenant_user`
     INDEX `UDX_TENANT_ID` (`tenant_id` asc)
 ) COMMENT = 'the users of tenant';
 
+CREATE TABLE uc_organization
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED NOT NULL COMMENT 'tenant id',
+    `name`       VARCHAR(64)     NOT NULL COMMENT 'name',
+    `icon`       VARCHAR(128)    NULL COMMENT 'icon',
+    `remark`     TEXT                     DEFAULT null COMMENT 'remark',
+    INDEX `UDX_TENANT_ID` (`tenant_id` asc)
+) COMMENT = 'organization';
+
+CREATE TABLE uc_department
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED NOT NULL COMMENT 'tenant id',
+    `name`       VARCHAR(64)     NOT NULL COMMENT 'name',
+    `org_id`     BIGINT UNSIGNED NOT NULL COMMENT 'organization id',
+    `icon`       VARCHAR(128)    NULL COMMENT 'icon',
+    `remark`     TEXT                     DEFAULT null COMMENT 'remark',
+    INDEX `UDX_TENANT_ID` (`tenant_id` asc),
+    INDEX `UDX_ORG_ID` (`org_id` asc)
+) COMMENT = 'department';
+
+CREATE TABLE uc_job_level
+(
+    `id`         BIGINT UNSIGNED  NOT NULL PRIMARY KEY,
+    `created_at` BIGINT UNSIGNED  NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)      NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED  NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)      NULL COMMENT 'Last updated by who',
+    `deleted`    BIT              NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED  NOT NULL COMMENT 'tenant id',
+    `org_id`     BIGINT UNSIGNED  NOT NULL COMMENT 'organization id',
+    `name`       VARCHAR(64)      NOT NULL COMMENT 'name',
+    `level`      INTEGER UNSIGNED NOT NULL COMMENT 'job level',
+    `icon`       VARCHAR(128)     NULL COMMENT 'icon',
+    `remark`     TEXT                      DEFAULT null COMMENT 'remark',
+    INDEX `UDX_TENANT_ID` (`tenant_id` asc),
+    INDEX `UDX_ORG_ID` (`org_id` asc)
+) COMMENT = 'job level';
+
+CREATE TABLE uc_job
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED NOT NULL COMMENT 'tenant id',
+    `org_id`     BIGINT UNSIGNED NOT NULL COMMENT 'organization id',
+    `depart_id`  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'department id',
+    `name`       VARCHAR(64)     NOT NULL COMMENT 'job name',
+    `level_id`   BIGINT UNSIGNED NOT NULL COMMENT 'job level',
+    `icon`       VARCHAR(128)    NULL COMMENT 'icon',
+    `remark`     TEXT                     DEFAULT null COMMENT 'remark',
+    INDEX `UDX_TENANT_ID` (`tenant_id` asc),
+    INDEX `UDX_ORG_ID` (`org_id` asc),
+    INDEX `UDX_DEPART_ID` (`depart_id` asc),
+    INDEX `UDX_LEVEL_ID` (`level_id` asc)
+) COMMENT = 'job';
+
+CREATE TABLE uc_user_organization
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY COMMENT 'id',
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
+    `uid`        BIGINT UNSIGNED NOT NULL COMMENT 'user id',
+    `org_id`     BIGINT UNSIGNED NOT NULL COMMENT 'organization id',
+    INDEX UDX_ROLE (`org_id`),
+    INDEX UDX_UID (`uid`),
+    INDEX IDX_TENANT_UID (`tenant_id`, `uid`),
+    INDEX IDX_TENANT_ROLE (`tenant_id`, `org_id`)
+) COMMENT = 'user roles';
+
+CREATE TABLE uc_user_department
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY COMMENT 'id',
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
+    `uid`        BIGINT UNSIGNED NOT NULL COMMENT 'user id',
+    `depart_id`  BIGINT UNSIGNED NOT NULL COMMENT 'department id',
+    INDEX UDX_ROLE (`depart_id`),
+    INDEX UDX_UID (`uid`),
+    INDEX IDX_TENANT_UID (`tenant_id`, `uid`),
+    INDEX IDX_TENANT_ROLE (`tenant_id`, `depart_id`)
+) COMMENT = 'user department';
+
+CREATE TABLE uc_user_job
+(
+    `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY COMMENT 'id',
+    `created_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `created_by` VARCHAR(32)     NULL COMMENT 'Create User Id',
+    `updated_at` BIGINT UNSIGNED NULL     DEFAULT NULL,
+    `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
+    `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
+    `tenant_id`  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
+    `uid`        BIGINT UNSIGNED NOT NULL COMMENT 'user id',
+    `depart_id`  BIGINT UNSIGNED NOT NULL COMMENT 'department id',
+    `job_id`     BIGINT UNSIGNED NOT NULL COMMENT 'job id',
+    INDEX UDX_ROLE (`depart_id`),
+    INDEX UDX_UID (`uid`),
+    INDEX IDX_TENANT_UID (`tenant_id`, `uid`),
+    INDEX IDX_TENANT_ROLE (`tenant_id`, `depart_id`),
+    INDEX IDX_TENANT_JOB (`tenant_id`, `job_id`)
+) COMMENT = 'user job';
+
 CREATE TABLE uc_role
 (
     `id`         BIGINT UNSIGNED NOT NULL PRIMARY KEY COMMENT 'id',
@@ -207,7 +331,7 @@ CREATE TABLE uc_role
     `name`       VARCHAR(128)    NOT NULL COMMENT 'role name',
     `builtin`    BIT             NOT NULL DEFAULT FALSE COMMENT 'builtin role, cannot be deleted',
     `provider`   VARCHAR(24)     NOT NULL COMMENT 'provider(db, ldap or ad)',
-    UNIQUE KEY UDX_ROLE (`role`),
+    UNIQUE KEY UDX_ROLE (`role`, `tenant_id`),
     INDEX IDX_TENANT_ID (`tenant_id`)
 ) COMMENT = 'roles';
 
@@ -220,10 +344,10 @@ CREATE TABLE uc_role_children
     `updated_by` VARCHAR(32)     NULL COMMENT 'Last updated by who',
     `tenant_id`  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
     `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
-    `role`       VARCHAR(32)     NOT NULL COMMENT 'ROLE',
-    `child`      VARCHAR(32)     NOT NULL COMMENT 'Child Role',
-    INDEX IDX_ROLE (`role`),
-    INDEX IDX_CHILD (`child`)
+    `role_id`    BIGINT UNSIGNED NOT NULL COMMENT 'Role Id',
+    `child_id`   BIGINT UNSIGNED NOT NULL COMMENT 'Child Role Id',
+    INDEX IDX_ROLE (`role_id`),
+    INDEX IDX_CHILD (`child_id`)
 ) COMMENT = 'role children';
 
 CREATE TABLE uc_user_role
@@ -236,11 +360,11 @@ CREATE TABLE uc_user_role
     `deleted`    BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
     `tenant_id`  BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
     `uid`        BIGINT UNSIGNED NOT NULL COMMENT 'user id',
-    `role`       VARCHAR(32)     NOT NULL COMMENT 'role',
-    INDEX UDX_ROLE (`role`),
+    `role_id`    BIGINT UNSIGNED NOT NULL COMMENT 'role id',
+    INDEX UDX_ROLE (`role_id`),
     INDEX UDX_UID (`uid`),
     INDEX IDX_TENANT_UID (`tenant_id`, `uid`),
-    INDEX IDX_TENANT_ROLE (`tenant_id`, `role`)
+    INDEX IDX_TENANT_ROLE (`tenant_id`, `role_id`)
 ) COMMENT = 'user roles';
 
 CREATE TABLE uc_privilege
@@ -271,7 +395,7 @@ CREATE TABLE uc_role_privilege
     `updated_by`   VARCHAR(32)     NULL COMMENT 'Last updated by who',
     `tenant_id`    BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'tenant id',
     `deleted`      BIT             NOT NULL DEFAULT FALSE COMMENT 'Soft Deleted Flag',
-    `role`         VARCHAR(32)     NOT NULL COMMENT 'ROLE',
+    `role_id`      BIGINT UNSIGNED NOT NULL COMMENT 'ROLE ID',
     `privilege_id` BIGINT UNSIGNED NOT NULL COMMENT 'privilege id',
     INDEX IDX_PRIVILEGE_ID (`privilege_id`),
     INDEX IDX_TENANT_ID (`tenant_id`)
@@ -284,6 +408,13 @@ INSERT INTO uc_user (id, created_at, created_by, updated_at, updated_by, deleted
 VALUES (1, 1218153600, '1', 1218153600, '1', false, 'admin', 'Administrator', 'Admin', null, null, null, null,
         '$2a$10$lda8JKIdmgV8mXLFZVTiVOgHaiQuRJXtyL55RbECrs0HtkHf4ZHy.', null, 'UNKNOWN', 'ACTIVATED', 0, null, 0, null,
         null, '127.0.0.1', 'pc', null);
+
+-- oauth
+INSERT INTO uc_oauth (id, created_at, created_by, updated_at, updated_by, deleted, uid, provider, open_id,
+                      union_id, login_time, device, ip, last_login_time, last_device, last_ip, remark)
+VALUES (1, 1218153600, '1', 1218153600, '1', false, 1, 'db', 'admin', 'admin', 1218153600, 'pc', '127.0.0.1', null,
+        null, null, null);
+
 -- roles
 INSERT INTO uc_role (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role, name, builtin,
                      provider)
@@ -301,13 +432,13 @@ INSERT INTO uc_privilege (id, created_at, created_by, updated_at, updated_by, te
 VALUES (1, 1218153600, '1', 11218153600, '1', 0, false, 'All Privileges', 'core', true, '*:*', null, null, null);
 
 -- privileges of role
-INSERT INTO uc_role_privilege (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role,
+INSERT INTO uc_role_privilege (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role_id,
                                privilege_id)
-VALUES (1, 1218153600, '1', 1218153600, '1', 0, false, 'sa', 1);
+VALUES (1, 1218153600, '1', 1218153600, '1', 0, false, 1, 1);
 
 -- role of user
-INSERT INTO uc_user_role (id, created_at, created_by, updated_at, updated_by, deleted, tenant_id, uid, role)
-VALUES (1, 1218153600, '1', 1218153600, '1', false, 0, 1, 'sa');
+INSERT INTO uc_user_role (id, created_at, created_by, updated_at, updated_by, deleted, tenant_id, uid, role_id)
+VALUES (1, 1218153600, '1', 1218153600, '1', false, 0, 1, 1);
 
 
 

@@ -16,8 +16,12 @@
  */
 package com.apzda.cloud.uc.domain.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import com.apzda.cloud.gsvc.security.authentication.AuthenticationDetails;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
+import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMeta;
 import com.apzda.cloud.uc.domain.entity.Oauth;
+import com.apzda.cloud.uc.domain.entity.OauthSession;
 import com.apzda.cloud.uc.domain.entity.User;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import com.apzda.cloud.uc.domain.repository.OauthRepository;
@@ -29,11 +33,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+
+import static com.apzda.cloud.uc.domain.entity.OauthSession.SIMULATOR;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -58,18 +68,21 @@ public class UserManagerImpl implements UserManager {
         if (StringUtils.isBlank(username)) {
             throw new UsernameNotFoundException("username is blank");
         }
-        // todo
-        val userWrapper = userRepository.getByUsername(username);
-
-        if (userWrapper.isEmpty()) {
+        val oauth = oauthRepository.findByOpenIdAndProvider(username, Oauth.SIMPLE);
+        if (oauth.isEmpty()) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
-        return userWrapper.get();
+        val user = oauth.get().getUser();
+
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
+        }
+        return user;
     }
 
     @Override
-    public boolean isCredentialsExpired(@NonNull Long uid) {
-        val credentialsExpiredAt = userMetaRepository.getByUidAndName(uid, UserMeta.CREDENTIALS_EXPIRED_AT);
+    public boolean isCredentialsExpired(@NonNull User user) {
+        val credentialsExpiredAt = userMetaRepository.getByUserAndName(user, UserMeta.CREDENTIALS_EXPIRED_AT);
         if (credentialsExpiredAt.isEmpty()) {
             return false;
         }
@@ -82,27 +95,67 @@ public class UserManagerImpl implements UserManager {
             }
         }
         catch (Exception e) {
-            log.warn("Cannot parse user({})'s credentialsExpiredAt({}) to long: {}", uid, value, e.getMessage());
+            log.warn("Cannot parse user({})'s credentialsExpiredAt({}) to long: {}", user.getId(), value,
+                    e.getMessage());
             return true;
         }
 
         return false;
     }
 
-    @Override
-    public List<UserMeta> getUserMetas(@NonNull Long uid) {
-        return userMetaRepository.findAllByUid(uid);
-    }
-
-    public List<UserMeta> getUserMetas(@NonNull Long uid, String name) {
-        return userMetaRepository.findAllByUidAndName(uid, name);
+    public List<UserMeta> getUserMetas(@NonNull User user, String name) {
+        return userMetaRepository.findAllByUserAndName(user, name);
     }
 
     @Override
-    public void onAuthenticated(JwtAuthenticationToken token, Oauth oauth) {
-        // 查看原信息
-        val origOauth = oauthRepository.findByOpenIdAndProvider(oauth.getOpenId(), oauth.getProvider());
+    @Transactional
+    @Modifying
+    public void onAuthenticated(AbstractAuthenticationToken token, Oauth oauth) {
+        // Oauth Data
+        oauth = oauthRepository.findByOpenIdAndProvider(oauth.getOpenId(), oauth.getProvider()).orElse(null);
+        if (oauth == null) {
+            throw new UsernameNotFoundException(String.format("%s is not found", token.getName()));
+        }
+        // Last Login Info
+        oauth.setLastLoginTime(DateUtil.current());
+        oauth.setLastIp("127.0.0.1");
+        oauth.setLastDevice("UNKNOWN");
+        if (token.getDetails() instanceof AuthenticationDetails details) {
+            oauth.setLastDevice(details.getDevice());
+            oauth.setLastIp(details.getRemoteAddress());
+        }
+    }
 
+    @Override
+    @Transactional
+    @Modifying
+    public void createOauthSession(JwtAuthenticationToken token) {
+        // Record Login Session
+        val userDetails = (UserDetailsMeta) token.getPrincipal();
+        val oauth = oauthRepository.findByOpenIdAndProvider(userDetails.getUsername(), userDetails.getProvider())
+            .orElse(null);
+        if (oauth == null) {
+            throw new UsernameNotFoundException(String.format("%s is not found", token.getName()));
+        }
+        val session = newOauthSession(token, oauth);
+        oauthSessionRepository.save(session);
+        Objects.requireNonNull(session.getId());
+        log.trace("Session recorded: {}", oauth.getOpenId());
+    }
+
+    @NonNull
+    public static OauthSession newOauthSession(AbstractAuthenticationToken token, Oauth oauth) {
+        val session = new OauthSession();
+        session.setOauth(oauth);
+        session.setUser(oauth.getUser());
+        session.setDevice(oauth.getDevice());
+        session.setIp(oauth.getIp());
+        session.setSimulator(SIMULATOR.equals(oauth.getDevice()));
+        if (token instanceof JwtAuthenticationToken) {
+            session.setAccessToken(((JwtAuthenticationToken) token).getJwtToken().getAccessToken());
+        }
+        session.setExpiration(0L);
+        return session;
     }
 
 }

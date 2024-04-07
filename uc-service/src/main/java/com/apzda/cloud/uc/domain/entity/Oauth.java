@@ -33,11 +33,12 @@ import lombok.ToString;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "uc_user_oauth")
+@Table(name = "uc_oauth")
+@ToString
 public class Oauth extends AuditableEntity<Long, String, Long> implements SoftDeletable {
-    public static final String SIMPLE = "simple";
+
+    public static final String SIMPLE = "db";
 
     public static final String PHONE = "phone";
 
@@ -53,8 +54,10 @@ public class Oauth extends AuditableEntity<Long, String, Long> implements SoftDe
     private boolean deleted;
 
     @NotNull
-    @Column(name = "uid", nullable = false)
-    private Long uid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    @ToString.Exclude
+    private User user;
 
     @Size(max = 24)
     @NotNull

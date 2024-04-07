@@ -33,9 +33,9 @@ import lombok.ToString;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "uc_user_oauth_meta")
+@Table(name = "uc_oauth_meta")
+@ToString
 public class OauthMeta extends AuditableEntity<Long, String, Long> implements SoftDeletable {
 
     @Id

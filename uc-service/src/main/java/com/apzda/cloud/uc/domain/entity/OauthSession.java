@@ -34,10 +34,12 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "uc_user_oauth_session")
+@Table(name = "uc_oauth_session")
+@ToString
 public class OauthSession extends AuditableEntity<Long, String, Long> implements SoftDeletable {
+
+    public static final String SIMULATOR = "simulator";
 
     @Id
     @GeneratedValue(generator = SnowflakeIdGenerator.NAME, strategy = GenerationType.SEQUENCE)
@@ -47,12 +49,14 @@ public class OauthSession extends AuditableEntity<Long, String, Long> implements
     private boolean deleted;
 
     @NotNull
-    @Column(name = "oauth_id", nullable = false)
-    private Long oauthId;
+    @ManyToOne
+    @JoinColumn(name = "oauth_id", nullable = false)
+    private Oauth oauth;
 
     @NotNull
-    @Column(name = "uid", nullable = false)
-    private Long uid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    private User user;
 
     @Size(max = 256)
     @Column(name = "grant_code", length = 256)

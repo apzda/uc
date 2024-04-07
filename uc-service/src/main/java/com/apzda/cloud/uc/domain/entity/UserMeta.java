@@ -36,10 +36,11 @@ import lombok.val;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_user_meta")
+@ToString
 public class UserMeta extends AuditableEntity<Long, String, Long> implements SoftDeletable {
+
     public static final String CREDENTIALS_EXPIRED_AT = "credentials_expired_at";
 
     public static final String EMAIL_ACTIVATED_AT = "email_activated_at";
@@ -56,8 +57,10 @@ public class UserMeta extends AuditableEntity<Long, String, Long> implements Sof
     private MetaType type;
 
     @NotNull
-    @Column(name = "uid", nullable = false)
-    private Long uid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid")
+    @ToString.Exclude
+    private User user;
 
     @Size(max = 32)
     @NotNull

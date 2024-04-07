@@ -26,6 +26,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.val;
+
+import java.util.Objects;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -34,9 +37,9 @@ import lombok.ToString;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_privilege")
+@ToString
 public class Privilege extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
 
     @Id
@@ -73,5 +76,22 @@ public class Privilege extends AuditableEntity<Long, String, Long> implements Te
 
     @Column(name = "remark")
     private String remark;
+
+    @Override
+    public int hashCode() {
+        if (permission != null) {
+            return permission.hashCode();
+        }
+        return -1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Privilege)) {
+            return false;
+        }
+        val p = ((Privilege) obj).getPermission();
+        return this == obj || Objects.equals(p, permission);
+    }
 
 }

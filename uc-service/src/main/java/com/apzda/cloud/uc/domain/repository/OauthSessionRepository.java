@@ -16,9 +16,14 @@
  */
 package com.apzda.cloud.uc.domain.repository;
 
+import com.apzda.cloud.uc.domain.entity.Oauth;
 import com.apzda.cloud.uc.domain.entity.OauthSession;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -27,5 +32,8 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface OauthSessionRepository extends CrudRepository<OauthSession, Long> {
+
+    @Query("From OauthSession o where o.oauth = ?1 order by o.createdAt DESC LIMIT 1")
+    Optional<OauthSession> findLastByOauthOrderByCreatedAtDesc(@NonNull Oauth oauth);
 
 }

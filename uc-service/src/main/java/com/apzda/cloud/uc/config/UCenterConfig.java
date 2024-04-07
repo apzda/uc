@@ -59,10 +59,10 @@ public class UCenterConfig {
     static class SecurityConfigure {
 
         @Bean
-        UserDetailsService userDetailsService(SettingService settingService, UserManager userManager,
+        UserDetailsService userDetailsService(UserManager userManager,
                 UserDetailsMetaRepository userDetailsMetaRepository) {
             // 自定义用户明细服务实现
-            return new UserDetailsServiceImpl(userManager, userDetailsMetaRepository, settingService);
+            return new UserDetailsServiceImpl(userManager, userDetailsMetaRepository);
         }
 
         @Bean("defaultAuthenticationProvider")

@@ -17,7 +17,6 @@
 package com.apzda.cloud.uc.security.filter;
 
 import com.apzda.cloud.gsvc.security.authentication.DeviceAwareAuthenticationProcessingFilter;
-import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +24,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -33,7 +33,7 @@ import java.io.IOException;
 
 /**
  * 用户名密码方式登录.
- * 
+ *
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
@@ -53,7 +53,7 @@ public class UsernameAndPasswordFilter extends DeviceAwareAuthenticationProcessi
         val param = readRequestBody(request, UsernameAndPassword.class);
         val username = param.getUsername();
         val password = param.getPassword();
-        val token = JwtAuthenticationToken.unauthenticated(username, password);
+        val token = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
 
         setDetails(request, token);
         // 开始认证

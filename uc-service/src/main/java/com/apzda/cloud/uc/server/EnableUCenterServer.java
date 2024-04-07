@@ -46,7 +46,8 @@ import java.lang.annotation.*;
     "com.apzda.cloud.uc.domain",
     "com.apzda.cloud.uc.facade",
     "com.apzda.cloud.uc.filter",
-    "com.apzda.cloud.uc.service"
+    "com.apzda.cloud.uc.service",
+    "com.apzda.cloud.uc.security.listener"
 })
 //@formatter:on
 @EnableJpaRepositories(basePackages = { "com.apzda.cloud.uc.domain.repository" })

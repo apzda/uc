@@ -59,7 +59,7 @@ public class UcenterServiceImpl implements UcenterService {
             builder.setEnabled(status == UserStatus.ACTIVATED || status == UserStatus.PENDING);
             builder.setAccountNonLocked(status != UserStatus.LOCKED);
             builder.setAccountNonExpired(status != UserStatus.EXPIRED);
-            builder.setCredentialsNonExpired(userManager.isCredentialsExpired(user.getId()));
+            builder.setCredentialsNonExpired(userManager.isCredentialsExpired(user));
             if (request.hasAll() && request.getAll()) {
                 val metas = getMetas(request);
                 builder.addAllMeta(metas.getMetaList());
@@ -85,10 +85,10 @@ public class UcenterServiceImpl implements UcenterService {
             val metaName = request.getMetaName();
             List<UserMeta> metas;
             if (StringUtils.isBlank(metaName)) {
-                metas = userManager.getUserMetas(user.getId());
+                metas = user.getMetas();
             }
             else {
-                metas = userManager.getUserMetas(user.getId(), metaName);
+                metas = userManager.getUserMetas(user, metaName);
             }
 
             val collect = metas.stream().map(meta -> {

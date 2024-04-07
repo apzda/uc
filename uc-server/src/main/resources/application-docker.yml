@@ -9,3 +9,5 @@ apzda:
 logging:
   level:
     com.apzda.cloud: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSSXXX} %-5level --- [%15.15t] %-40.40logger{39}:%-4L - [%X{tid}]%msg%n"

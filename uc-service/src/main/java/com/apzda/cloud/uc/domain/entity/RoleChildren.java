@@ -22,7 +22,6 @@ import com.apzda.cloud.gsvc.model.SoftDeletable;
 import com.apzda.cloud.gsvc.model.Tenantable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,9 +34,9 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_role_children")
+@ToString
 public class RoleChildren extends AuditableEntity<Long, String, Long> implements Tenantable<Long>, SoftDeletable {
 
     @Id
@@ -51,14 +50,12 @@ public class RoleChildren extends AuditableEntity<Long, String, Long> implements
     @Column(name = "tenant_id", nullable = false)
     private Long tenantId;
 
-    @Size(max = 32)
     @NotNull
-    @Column(name = "role", nullable = false, length = 32)
-    private String role;
+    @Column(name = "role_id", nullable = false)
+    private Long roleId;
 
-    @Size(max = 32)
     @NotNull
-    @Column(name = "child", nullable = false, length = 32)
-    private String child;
+    @Column(name = "child_id", nullable = false)
+    private Long childId;
 
 }

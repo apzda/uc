@@ -21,7 +21,6 @@ import com.apzda.cloud.gsvc.domain.SnowflakeIdGenerator;
 import com.apzda.cloud.gsvc.model.SoftDeletable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,9 +32,9 @@ import lombok.ToString;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_user_role")
+@ToString
 public class UserRole extends AuditableEntity<Long, String, Long> implements SoftDeletable {
 
     @Id
@@ -46,12 +45,15 @@ public class UserRole extends AuditableEntity<Long, String, Long> implements Sof
     private boolean deleted;
 
     @NotNull
-    @Column(name = "uid", nullable = false)
-    private Long uid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    @ToString.Exclude
+    private User user;
 
-    @Size(max = 32)
     @NotNull
-    @Column(name = "role", nullable = false, length = 32)
-    private String role;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    @ToString.Exclude
+    private Role role;
 
 }

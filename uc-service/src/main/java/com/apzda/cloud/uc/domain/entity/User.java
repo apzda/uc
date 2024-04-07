@@ -27,11 +27,12 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -42,9 +43,10 @@ import java.util.List;
  **/
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "uc_user")
+@Slf4j
+@ToString
 public class User extends AuditableEntity<Long, String, Long> implements SoftDeletable {
 
     @Id
@@ -132,36 +134,76 @@ public class User extends AuditableEntity<Long, String, Long> implements SoftDel
     @Column(name = "remark")
     private String remark;
 
-    @ManyToMany
-    @JoinTable(name = "uc_user_role", joinColumns = @JoinColumn(name = "uid", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "role"))
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ToString.Exclude
+    private List<Oauth> oauth;
+
+    // 角色
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "uc_user_role", joinColumns = @JoinColumn(name = "uid"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     @ToString.Exclude
     private List<Role> roles;
 
-    @OneToMany
-    @JoinColumn(name = "uid", referencedColumnName = "id")
+    // 元数据
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
     @ToString.Exclude
     private List<UserMeta> metas;
 
+    // 组织
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @ToString.Exclude
+    private List<UserOrganization> organizations;
+
+    // 部门
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @ToString.Exclude
+    private List<UserDepartment> departments;
+
+    // 工作岗位
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @ToString.Exclude
+    private List<UserJob> jobs;
+
+    // 多因素认证
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @ToString.Exclude
+    private List<UserMfa> mfa;
+
+    // 安全问题
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @ToString.Exclude
+    private List<UserSecurityQA> qa;
+
     @NonNull
-    public List<Role> getAllRoles(@Nullable String tenantId) {
+    public Collection<Role> allRoles(@NonNull Long tenantId) {
         val rs = new HashSet<Role>();
-        val roles1 = getRoles();
-        if (!CollectionUtils.isEmpty(roles1)) {
-            for (Role role : roles1) {
-                if (rs.contains(role)) {
-                    continue;
+        val roleList = getRoles();
+        if (!CollectionUtils.isEmpty(roleList)) {
+            for (Role role : roleList) {
+                if (tenantId.equals(role.getTenantId()) || role.getTenantId() == 0L) {
+                    if (rs.contains(role)) {
+                        continue;
+                    }
+                    rs.add(role);
+                    val children = role.allChildren();
+                    rs.addAll(children);
+                    log.trace("Merged Role({}) and its children: {}", role, children);
                 }
-                rs.add(role);
-                val children = role.getChildren();
             }
         }
-        return rs.stream().toList();
+        return rs;
     }
 
     @NonNull
-    public List<Role> getAllRoles() {
-        return getAllRoles(null);
+    public Collection<Privilege> privileges(@NonNull Long tenantId) {
+        val privileges = new HashSet<Privilege>();
+        for (Role role : allRoles(tenantId)) {
+            val privs = role.getPrivileges();
+            privileges.addAll(privs);
+            log.trace("Merged role({}) privileges: {}", role, privs);
+        }
+        return privileges;
     }
 
 }
