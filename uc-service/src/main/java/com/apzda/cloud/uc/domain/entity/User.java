@@ -134,44 +134,59 @@ public class User extends AuditableEntity<Long, String, Long> implements SoftDel
     @Column(name = "remark")
     private String remark;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<Oauth> oauth;
 
     // 角色
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @JoinTable(name = "uc_user_role", joinColumns = @JoinColumn(name = "uid"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     @ToString.Exclude
     private List<Role> roles;
 
     // 元数据
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<UserMeta> metas;
 
     // 组织
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<UserOrganization> organizations;
 
     // 部门
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<UserDepartment> departments;
 
     // 工作岗位
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<UserJob> jobs;
 
     // 多因素认证
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<UserMfa> mfa;
 
     // 安全问题
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH },
+            mappedBy = "user")
     @ToString.Exclude
     private List<UserSecurityQA> qa;
 
