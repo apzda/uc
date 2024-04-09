@@ -26,8 +26,6 @@ logging:
   level:
     com.apzda.cloud: trace
     web: info
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSSXXX} %highlight(%-5level) --- [%15.15t] %cyan(%-40.40logger{39}):%-4L - [%X{tid}]%msg%n"
 
 apzda:
   cloud:
