@@ -1,7 +1,7 @@
 package com.apzda.cloud.uc.setting;
 
 import com.apzda.cloud.config.Setting;
-import com.apzda.cloud.gsvc.utils.I18nHelper;
+import com.apzda.cloud.gsvc.utils.I18nUtils;
 import lombok.Data;
 
 import java.io.Serial;
@@ -20,7 +20,7 @@ public class UcSetting implements Setting, Serializable {
 
     @Override
     public String name() {
-        return I18nHelper.t("uc.setting.name", "User Center Setting");
+        return I18nUtils.t("uc.setting.name", "User Center Setting");
     }
 
 }
