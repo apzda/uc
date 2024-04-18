@@ -7,7 +7,7 @@
     <parent>
         <artifactId>apzda-cloud-gsvc-parent</artifactId>
         <groupId>com.apzda.cloud</groupId>
-        <version>1.2.13</version>
+        <version>1.2.19</version>
     </parent>
 
     <artifactId>uc</artifactId>
@@ -17,6 +17,10 @@
     <description>User Center</description>
     <url>https://docs.apzda.com/ucenter</url>
 
+    <properties>
+        <apzda.bom.version>1.0.4</apzda.bom.version>
+    </properties>
+
     <modules>
         <module>uc-client</module>
         <module>uc-service</module>
@@ -25,13 +29,6 @@
         <module>uc-server</module>
         <module>uc-i18n</module>
     </modules>
-
-    <properties>
-        <apzda.bom.version>1.0.2</apzda.bom.version>
-        <apzda.config.version>1.0.7-SNAPSHOT</apzda.config.version>
-        <apzda.captcha.version>1.0.5-SNAPSHOT</apzda.captcha.version>
-        <apzda.audit.version>1.0.2-SNAPSHOT</apzda.audit.version>
-    </properties>
 
     <issueManagement>
         <system>Github Issue</system>
@@ -117,22 +114,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <dependency>
-                <groupId>com.apzda.cloud</groupId>
-                <artifactId>captcha-client</artifactId>
-                <version>${apzda.captcha.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.apzda.cloud</groupId>
-                <artifactId>config-client</artifactId>
-                <version>${apzda.config.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.apzda.cloud</groupId>
-                <artifactId>audit-client</artifactId>
-                <version>${apzda.audit.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -145,26 +126,13 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>3.0.0</version>
                     <configuration>
-                        <preparationGoals>clean verify</preparationGoals>
+                        <preparationGoals>clean compile</preparationGoals>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <tagNameFormat>v@{project.version}</tagNameFormat>
                         <generateReleasePoms>false</generateReleasePoms>
-                        <useReleaseProfile>false</useReleaseProfile>
                         <releaseProfiles>release</releaseProfiles>
                         <arguments>-Dmaven.site.skip=true</arguments>
-                        <goals>deploy</goals>
-                    </configuration>
-                </plugin>
-                <!-- nexus-staging-maven-plugin -->
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.13</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        <goals>install</goals>
                     </configuration>
                 </plugin>
             </plugins>
@@ -177,10 +145,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
