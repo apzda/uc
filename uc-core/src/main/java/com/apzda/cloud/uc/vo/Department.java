@@ -19,6 +19,9 @@ package com.apzda.cloud.uc.vo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
@@ -36,8 +39,8 @@ public class Department {
 
     private String icon;
 
-    private String jobTile;
+    private Boolean current;
 
-    private Integer jobLevel;
+    private Map<String, Job> jobs = new HashMap<>();
 
 }

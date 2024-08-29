@@ -19,7 +19,12 @@
     <url>https://docs.apzda.com/ucenter</url>
 
     <properties>
-        <apzda.bom.version>1.0.4</apzda.bom.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <apzda.bom.version>1.0.5-SNAPSHOT</apzda.bom.version>
+
+        <googleauth.version>1.5.0</googleauth.version>
+        <wx.java.version>4.6.0</wx.java.version>
     </properties>
 
     <modules>
@@ -29,6 +34,12 @@
         <module>uc-proto</module>
         <module>uc-server</module>
         <module>uc-i18n</module>
+        <module>uc-ldap</module>
+        <module>uc-domain</module>
+        <module>uc-service-proto</module>
+        <module>uc-wx-miniapp</module>
+        <module>uc-wx-mp</module>
+        <module>uc-sms</module>
     </modules>
 
     <issueManagement>
@@ -81,6 +92,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- modules -->
             <dependency>
                 <groupId>com.apzda.cloud</groupId>
                 <artifactId>uc-core</artifactId>
@@ -88,7 +100,17 @@
             </dependency>
             <dependency>
                 <groupId>com.apzda.cloud</groupId>
+                <artifactId>uc-domain</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.apzda.cloud</groupId>
                 <artifactId>uc-i18n</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.apzda.cloud</groupId>
+                <artifactId>uc-ldap</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -106,7 +128,26 @@
                 <artifactId>uc-service</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.apzda.cloud</groupId>
+                <artifactId>uc-service-proto</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.apzda.cloud</groupId>
+                <artifactId>uc-sms</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.apzda.cloud</groupId>
+                <artifactId>uc-wx-miniapp</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.apzda.cloud</groupId>
+                <artifactId>uc-wx-mp</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
             <!-- apzda official modules -->
             <dependency>
                 <groupId>com.apzda.cloud</groupId>
@@ -114,6 +155,37 @@
                 <version>${apzda.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- third party library -->
+            <dependency>
+                <groupId>com.warrenstrange</groupId>
+                <artifactId>googleauth</artifactId>
+                <version>${googleauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-miniapp</artifactId>
+                <version>${wx.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-mp</artifactId>
+                <version>${wx.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-cp</artifactId>
+                <version>${wx.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-pay</artifactId>
+                <version>${wx.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-open</artifactId>
+                <version>${wx.java.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

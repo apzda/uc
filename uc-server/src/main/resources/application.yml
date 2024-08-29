@@ -4,31 +4,47 @@ server:
 spring:
   application:
     name: ucenter-service
+  config:
+    import: classpath:druid.properties
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
   messages:
     basename: messages-uc
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-    username: root
-    password: Abc12332!
   data:
     redis:
-      database: 1
+      host: localhost
+      database: 12
       lettuce:
         pool:
           enabled: true
-      host: redis
   jpa:
     hibernate:
       ddl-auto: validate
+    open-in-view: false
   flyway:
     enabled: false
 
 apzda:
+  cloud:
+    config:
+      logout-path: /logout
+    security:
+      meta-repo: redis
+      jwt-key: ENC(s2McIm5eJWGWauqTT99Rg7Hm9bLI+F7LeG5vCbTliDDwdW+VYIRtfcYje71NyiGO)
+      role-prefix: R_
+      credentials-expired-enabled: true
+      reset-credentials-path: /~accountService/updatePassword
+      mfa-enabled: true
+      mfa-exclude: /~accountService/mfaConfig,/~accountService/setupMfa,/~accountService/verifyMfa
   ucenter:
     server:
-      endpoint:
-        username-password: /uc/login
+      props:
+        issuer: PosPay
 
 logging:
   pattern:

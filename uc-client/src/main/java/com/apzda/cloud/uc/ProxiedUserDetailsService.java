@@ -18,7 +18,6 @@ package com.apzda.cloud.uc;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.digest.MD5;
-import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.proto.Request;
 import com.apzda.cloud.uc.proto.UcenterService;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +40,6 @@ import java.util.Collections;
 public class ProxiedUserDetailsService implements UserDetailsService {
 
     private final UcenterService ucenterService;
-
-    private final UserDetailsMetaRepository userDetailsMetaRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -69,7 +66,7 @@ public class ProxiedUserDetailsService implements UserDetailsService {
                     Collections.emptyList());
         }
 
-        return userDetailsMetaRepository.create(user);
+        return user;
     }
 
 }

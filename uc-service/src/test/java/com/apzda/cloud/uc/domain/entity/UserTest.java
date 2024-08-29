@@ -1,6 +1,7 @@
 package com.apzda.cloud.uc.domain.entity;
 
 import com.apzda.cloud.uc.domain.repository.OrganizationRepository;
+import com.apzda.cloud.uc.domain.repository.TenantUserRepository;
 import com.apzda.cloud.uc.domain.repository.UserOrganizationRepository;
 import com.apzda.cloud.uc.domain.repository.UserRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  **/
 
 @Sql("classpath:/admin_test.sql")
+@Sql("classpath:/user_test.sql")
 class UserTest extends JpaTestBase {
 
     @Autowired
@@ -34,6 +36,9 @@ class UserTest extends JpaTestBase {
 
     @Autowired
     private UserOrganizationRepository userOrganizationRepository;
+
+    @Autowired
+    private TenantUserRepository tenantUserRepository;
 
     @Test
     @Transactional
@@ -101,14 +106,53 @@ class UserTest extends JpaTestBase {
 
         userRepository.save(user);
 
-        val ous = userOrganizationRepository.listByUser(user);
+        val ous = userOrganizationRepository.findAllByUser(user);
         assertThat(ous).isNotEmpty();
 
         user.getOrganizations().clear();
 
         userRepository.save(user);
-        val ous1 = userOrganizationRepository.listByUser(user);
+        val ous1 = userOrganizationRepository.findAllByUser(user);
         assertThat(ous1).isNotEmpty();
+    }
+
+    @Test
+    @Transactional
+    void user_data_is_ok() {
+        // given
+        val username = "gsvc";
+        // when
+        val user = userManager.getUserByUsername(username);
+        // then
+        assertThat(user.getRoles().size()).isEqualTo(2);
+        assertThat(user.getRoles().get(0).getRole()).isEqualTo("admin");
+        assertThat(user.getMetas().size()).isEqualTo(2);
+    }
+
+    @Test
+    @Transactional
+    void tenant_user_data_is_ok() {
+        // given
+        val username = "gsvc";
+        // when
+        val user = userManager.getUserByUsername(username);
+        val tenant = new Tenant();
+        tenant.setId(1L);
+        val tenantUser = tenantUserRepository.getByTenantAndUser(tenant, user);
+
+        // then
+        val roles = user.allRoles(1L);
+        val metas = tenantUser.allMetas();
+        assertThat(roles.size()).isEqualTo(3);
+        assertThat(user.getRoles().get(0).getRole()).isEqualTo("admin");
+        assertThat(metas.size()).isEqualTo(2);
+
+        val test = metas.stream()
+            .anyMatch((meta) -> meta.getName().equals("test") && meta.getValue().equals("test string"));
+        assertThat(test).isTrue();
+
+        val init = metas.stream().anyMatch((meta) -> meta.getName().equals("int") && meta.getValue().equals("2"));
+        assertThat(init).isTrue();
     }
 
 }

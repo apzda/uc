@@ -16,6 +16,8 @@
  */
 package com.apzda.cloud.uc.config;
 
+import com.apzda.cloud.uc.mfa.Authenticator;
+import com.apzda.cloud.uc.security.mfa.GoogleTotpAuthenticator;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -32,13 +34,23 @@ import java.util.Map;
 public class UCenterConfigProperties {
 
     /**
-     * 是否启用(run-as)功能
+     * 登录时禁用验证码
      */
-    private boolean runAsEnabled = false;
+    private boolean captchaDisabled;
 
-    private String runAsAuthority = "RUNAS";
+    /**
+     * 第三方登录时是否自动创建账户，如果不创建则需要绑定到已有账户
+     */
+    private boolean autoCreateAccount = true;
 
-    private String beRunAsAuthority = "SIMPLE_USER";
+    /**
+     * 用户名(登录名)前缀
+     */
+    private String usernamePrefix = "";
+
+    private Class<? extends Authenticator> authenticator = GoogleTotpAuthenticator.class;
+
+    private final Map<String, String> props = new LinkedHashMap<>();
 
     private final Map<String, String> endpoint = new LinkedHashMap<>();
 

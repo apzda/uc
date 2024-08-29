@@ -18,6 +18,7 @@ package com.apzda.cloud.uc.test;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -33,10 +34,11 @@ import org.springframework.test.context.ContextConfiguration;
 @DataJpaTest
 @ContextConfiguration(classes = TestApp.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureJson
 @ActiveProfiles({ "test" })
-@EnableJpaRepositories(basePackages = { "com.apzda.cloud.*.domain.repository" })
+@EnableJpaRepositories("com.apzda.cloud.*.domain.repository")
 @EntityScan("com.apzda.cloud.*.domain.entity")
-@ComponentScan(basePackages = { "com.apzda.cloud.uc.domain", "com.apzda.cloud.uc.service" })
+@ComponentScan({ "com.apzda.cloud.uc.domain", "com.apzda.cloud.uc.service" })
 public class JpaTestBase {
 
 }

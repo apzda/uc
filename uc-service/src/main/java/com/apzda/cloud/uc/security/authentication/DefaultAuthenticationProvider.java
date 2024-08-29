@@ -1,8 +1,8 @@
 package com.apzda.cloud.uc.security.authentication;
 
 import cn.hutool.crypto.digest.DigestUtil;
+import com.apzda.cloud.audit.aop.AuditContextHolder;
 import com.apzda.cloud.audit.aop.AuditLog;
-import com.apzda.cloud.captcha.error.NeedCaptcha;
 import com.apzda.cloud.captcha.helper.CaptchaHelper;
 import com.apzda.cloud.config.exception.SettingUnavailableException;
 import com.apzda.cloud.config.service.SettingService;
@@ -12,22 +12,28 @@ import com.apzda.cloud.gsvc.security.exception.AuthenticationError;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMeta;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
+import com.apzda.cloud.uc.UserMetas;
+import com.apzda.cloud.uc.config.UCenterConfigProperties;
 import com.apzda.cloud.uc.domain.entity.Oauth;
+import com.apzda.cloud.uc.domain.repository.TenantRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
+import com.apzda.cloud.uc.realm.AuthenticatingRealm;
 import com.apzda.cloud.uc.security.AuthTempData;
+import com.apzda.cloud.uc.security.error.NeedCaptchaError;
 import com.apzda.cloud.uc.setting.UcSetting;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
 
@@ -36,15 +42,11 @@ import java.util.Objects;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class DefaultAuthenticationProvider implements AuthenticationProvider {
+public class DefaultAuthenticationProvider implements AuthenticationProvider, ApplicationContextAware {
 
     private final UserManager userManager;
 
-    private final UserDetailsService userDetailsService;
-
     private final UserDetailsMetaRepository userDetailsMetaRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     private final CaptchaHelper captchaHelper;
 
@@ -52,19 +54,30 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
     private final TempStorage tempStorage;
 
+    private ApplicationContext applicationContext;
+
+    private UCenterConfigProperties properties;
+
+    @Override
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        this.properties = this.applicationContext.getBean(UCenterConfigProperties.class);
+    }
+
     @Override
     @AuditLog(activity = "login", template = "{} authenticated successfully", errorTpl = "{} authenticated failure: {}",
             args = { "#authentication.principal", "#throwExp?.message" })
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.debug("Start Authenticate Authentication: {}", authentication);
+        log.trace("Start Authenticate Authentication: {}", authentication);
 
-        val credentials = authentication.getCredentials();
         val principal = authentication.getPrincipal();
         if (Objects.isNull(principal) || StringUtils.isBlank((String) principal)) {
             throw new UsernameNotFoundException("username is blank");
         }
         val username = (String) principal;
-        log.debug("开始用户/密码认证: {}", username);
+        val context = AuditContextHolder.getContext();
+        context.setUsername(username);
+
         UcSetting ucSetting;
         try {
             ucSetting = settingService.load(UcSetting.class);
@@ -73,47 +86,64 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
             log.error("无法加载用户中心配置: {}", e.getMessage());
             throw new AuthenticationError(ServiceError.SERVICE_UNAVAILABLE);
         }
-        val data = load(username);
+
+        // 加载登录临时数据
+        val data = loadLoginTmpData(username);
         // 验证码
         validateCaptcha(data, ucSetting);
+        // 获取用户认证领域
+        val provider = StringUtils.defaultIfBlank(ucSetting.getProvider(), "db");
+        val realm = applicationContext.getBean(provider + "AuthenticatingRealm", AuthenticatingRealm.class);
+        log.debug("开始用户/密码认证，认证域({}): {}", provider, username);
+        Exception exception;
+        try {
+            val realmUser = realm.authenticate(authentication);
+            if (realmUser != null) {
+                val userDetailsMeta = userDetailsMetaRepository.create(realmUser);
+                val authed = JwtAuthenticationToken.authenticated(userDetailsMeta, realmUser.getPassword());
+                userDetailsMeta.remove(UserDetailsMeta.AUTHORITY_META_KEY);
+                userDetailsMeta.set(UserDetailsMeta.LOGIN_TIME_META_KEY, authed, 0L);
+                userDetailsMeta.remove(UserMetas.RUNNING_AS, authed);
+                userDetailsMeta.setOpenId(realmUser.getOpenId());
+                userDetailsMeta.setUnionId(realmUser.getUnionId());
+                userDetailsMeta.setProvider(realm.getName());
 
-        val userDetails = userDetailsService.loadUserByUsername(username);
-        val password = userDetails.getPassword();
+                val domain = realmUser.getDomain();
+                if (StringUtils.isNotBlank(domain)) {
+                    val tenantRepository = applicationContext.getBean(TenantRepository.class);
+                    val tenant = tenantRepository.getByDomain(domain);
+                    tenant.ifPresent(value -> userDetailsMeta.set(UserMetas.CURRENT_TENANT_ID, authed, value.getId()));
+                }
 
-        UserDetailsMeta.checkUserDetails(userDetails);
+                data.setErrorCnt(0);
+                data.setNeedCaptcha(false);
+                saveLoginTmpData(username, data);
 
-        if (passwordEncoder.matches((CharSequence) credentials, password)) {
-            val userDetailsMeta = userDetailsMetaRepository.create(userDetails);
-            val authed = JwtAuthenticationToken.authenticated(userDetailsMeta, password);
-            // bookmark: Clear Authorities, cause to reload authorities from
-            // UserDetailsMetaService
-            log.trace("Clear user's authorities and last login time: {}", username);
-            userDetailsMeta.remove(UserDetailsMeta.AUTHORITY_META_KEY);
-            userDetailsMeta.set(authed.deviceAwareMetaKey(UserDetailsMeta.LOGIN_TIME_META_KEY), 0L);
+                // this is a transit Oauth Object!!!
+                val oauth = new Oauth();
+                oauth.setOpenId(realmUser.getOpenId());
+                oauth.setUnionId(realmUser.getUnionId());
+                oauth.setProvider(realm.getName());
+                userManager.onAuthenticated(authed, oauth);
 
-            log.trace("Reset auth temp data: {}", username);
-            data.setErrorCnt(0);
-            data.setNeedCaptcha(false);
-            save(username, data);
-
-            // this is a transit Oauth Object!!!
-            val oauth = new Oauth();
-            oauth.setOpenId(username);
-            oauth.setUnionId(username);
-            oauth.setProvider(Oauth.SIMPLE);
-            userManager.onAuthenticated(authed, oauth);
-
-            return authed;
+                return authed;
+            }
+            else {
+                throw new AuthenticationError(ServiceError.USER_PWD_INCORRECT);
+            }
+        }
+        catch (AuthenticationException e) {
+            exception = e;
         }
 
-        if (ucSetting.getThresholdForCaptcha() >= 0) {
+        if (!properties.isCaptchaDisabled() && ucSetting.getThresholdForCaptcha() >= 0) {
             data.setErrorCnt(data.getErrorCnt() + 1);
             if (data.getErrorCnt() >= ucSetting.getThresholdForCaptcha()) {
                 data.setNeedCaptcha(true);
             }
-            save(username, data);
+            saveLoginTmpData(username, data);
             if (data.isNeedCaptcha()) {
-                throw new AuthenticationError(new NeedCaptcha());
+                throw new AuthenticationError(new NeedCaptchaError(exception.getMessage()));
             }
         }
         throw new AuthenticationError(ServiceError.USER_PWD_INCORRECT);
@@ -125,6 +155,9 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
     }
 
     private void validateCaptcha(@NonNull AuthTempData data, @NonNull UcSetting ucSetting) {
+        if (properties.isCaptchaDisabled()) {
+            return;
+        }
         val threshold = ucSetting.getThresholdForCaptcha();
         if (threshold == -1 || threshold > 0 && !data.isNeedCaptcha()) {
             return;
@@ -134,13 +167,13 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
     }
 
     @NonNull
-    private AuthTempData load(@NonNull String username) {
+    private AuthTempData loadLoginTmpData(@NonNull String username) {
         val id = "auth.tmp." + DigestUtil.md5Hex(username);
         val data = tempStorage.load(id, AuthTempData.class);
         return data.orElse(new AuthTempData());
     }
 
-    private void save(@NonNull String username, @NonNull AuthTempData data) {
+    private void saveLoginTmpData(@NonNull String username, @NonNull AuthTempData data) {
         val id = "auth.tmp." + DigestUtil.md5Hex(username);
         try {
             tempStorage.save(id, data);

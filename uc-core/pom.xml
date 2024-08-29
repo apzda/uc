@@ -10,10 +10,19 @@
     </parent>
 
     <artifactId>uc-core</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>com.apzda.cloud</groupId>
+            <artifactId>uc-i18n</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
             <artifactId>config-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.apzda.cloud</groupId>

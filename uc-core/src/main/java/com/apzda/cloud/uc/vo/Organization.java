@@ -19,7 +19,8 @@ package com.apzda.cloud.uc.vo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -39,8 +40,8 @@ public class Organization {
 
     private String icon;
 
-    private String jobTitle;
+    private Boolean current;
 
-    private List<Department> units;
+    private Map<String, Department> departments = new HashMap<>();
 
 }

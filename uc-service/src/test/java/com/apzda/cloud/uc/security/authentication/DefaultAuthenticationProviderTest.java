@@ -62,7 +62,7 @@ class DefaultAuthenticationProviderTest extends TestBase {
         // when
         eventPublisher.publishEvent(event);
         // then
-        val session = oauthSessionRepository.findLastByOauthOrderByCreatedAtDesc(oauth.get());
+        val session = oauthSessionRepository.getFirstByOauthOrderByCreatedAtDesc(oauth.get());
         assertThat(session.isPresent()).isTrue();
         assertThat(session.get().getAccessToken()).isEqualTo("123");
     }

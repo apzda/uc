@@ -16,13 +16,7 @@
  */
 package com.apzda.cloud.uc.server;
 
-import com.apzda.cloud.uc.config.DruidConfig;
-import com.apzda.cloud.uc.config.UCenterConfig;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.lang.annotation.*;
 
@@ -33,21 +27,16 @@ import java.lang.annotation.*;
  **/
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@PropertySource("classpath:apzda.uc.service.properties")
 //@formatter:off
-@Import({
-    UCenterConfig.class,
-    DruidConfig.class
-})
 @ComponentScan(basePackages = {
-    "com.apzda.cloud.uc.controller",
+    "com.apzda.cloud.uc.config",
     "com.apzda.cloud.uc.domain",
     "com.apzda.cloud.uc.service",
-    "com.apzda.cloud.uc.security.listener"
+    "com.apzda.cloud.uc.controller",
+    "com.apzda.cloud.uc.security.listener",
+    "com.apzda.cloud.uc.security.realm"
 })
 //@formatter:on
-@EnableJpaRepositories("com.apzda.cloud.uc.domain.repository")
-@EntityScan("com.apzda.cloud.uc.domain.entity")
 @Documented
 public @interface EnableUCenterServer {
 

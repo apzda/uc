@@ -16,7 +16,6 @@
  */
 package com.apzda.cloud.uc;
 
-import com.apzda.cloud.gsvc.core.GsvcContextHolder;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
 import com.apzda.cloud.uc.proto.Request;
 import com.apzda.cloud.uc.proto.UcenterService;
@@ -36,7 +35,13 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.apzda.cloud.uc.proto.MetaValueType.OBJECT;
+
 /**
+ * 用户元数据服务.
+ * <p>
+ * {@link com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository}使用它来加载用户的元数据.
+ *
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
  * @since 1.0.0
@@ -52,26 +57,36 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(@NonNull UserDetails userDetails) {
         val username = userDetails.getUsername();
-        val authorities = ucenterService.getAuthorities(Request.newBuilder().setUsername(username).build());
+        try {
+            val authorities = ucenterService.getAuthorities(Request.newBuilder().setUsername(username).build());
 
-        if (authorities.getErrCode() == 0) {
-            if (authorities.getAuthorityCount() > 0) {
-                return authorities.getAuthorityList()
-                    .stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
+            if (authorities.getErrCode() == 0) {
+                if (authorities.getAuthorityCount() > 0) {
+                    return authorities.getAuthorityList()
+                        .stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+                }
+                else {
+                    log.trace("Authorities of {} is empty!", username);
+                }
+            }
+            else {
+                log.warn("Cannot load authorities of {} from UCenter Service: {}", username, authorities.getErrMsg());
             }
         }
-
+        catch (Exception e) {
+            log.warn("Cannot load authorities of {} from UCenter Service: {}", username, e.getMessage());
+        }
         return Collections.emptyList();
     }
 
     @Override
     @NonNull
-    public <R> Optional<R> getMetaData(@NonNull UserDetails userDetails, @NonNull String key,
+    public <R> Optional<R> getMetaData(@NonNull UserDetails userDetails, @NonNull String metaKey,
             @NonNull Class<R> rClass) {
         val username = userDetails.getUsername();
-        val metas = ucenterService.getMetas(Request.newBuilder().setUsername(username).setMetaName(key).build());
+        val metas = ucenterService.getMetas(Request.newBuilder().setUsername(username).setMetaName(metaKey).build());
         if (metas.getErrCode() == 0 && metas.getMetaCount() > 0) {
             val meta = metas.getMeta(0);
             val value = meta.getValue();
@@ -87,7 +102,7 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
                 });
             }
             catch (JsonProcessingException e) {
-                log.warn("[{}] Cannot parse meta value: {} - {}", GsvcContextHolder.getRequestId(), key, value);
+                log.warn("Cannot parse meta value: {} - {}", metaKey, value);
             }
         }
         return Optional.empty();
@@ -95,26 +110,31 @@ public class UserDetailsMetaServiceImpl implements UserDetailsMetaService {
 
     @Override
     @NonNull
-    public <R> Optional<R> getMultiMetaData(@NonNull UserDetails userDetails, @NonNull String key,
+    @SuppressWarnings("unchecked")
+    public <R> Optional<R> getMultiMetaData(@NonNull UserDetails userDetails, @NonNull String metaKey,
             @NonNull TypeReference<R> typeReference) {
         val username = userDetails.getUsername();
-        val metas = ucenterService.getMetas(Request.newBuilder().setUsername(username).setMetaName(key).build());
+        val metas = ucenterService.getMetas(Request.newBuilder().setUsername(username).setMetaName(metaKey).build());
 
         if (metas.getErrCode() == 0 && metas.getMetaCount() > 0) {
             val meta = metas.getMeta(0);
             val value = meta.getValue();
             try {
-                val type = meta.getType();
-                return Optional.ofNullable(switch (type) {
-                    case OBJECT -> objectMapper.readValue(value, typeReference);
-                    default -> objectMapper.readValue(String.format("[%s]", value), typeReference);
-                });
+                if (meta.getType() == OBJECT) {
+                    return Optional.ofNullable(objectMapper.readValue(value, typeReference));
+                }
+                else {
+                    return Optional.ofNullable(objectMapper.readValue(String.format("[%s]", value), typeReference));
+                }
             }
             catch (JsonProcessingException e) {
-                log.warn("[{}] Cannot parse meta value: {} - {}", GsvcContextHolder.getRequestId(), key,
-                        meta.getValue());
+                log.warn("Cannot parse meta values: {} - {}", metaKey, meta.getValue());
             }
         }
+        else if (metas.getErrCode() == 0) {
+            return (Optional<R>) Optional.of(Collections.emptyList());
+        }
+
         return Optional.empty();
     }
 

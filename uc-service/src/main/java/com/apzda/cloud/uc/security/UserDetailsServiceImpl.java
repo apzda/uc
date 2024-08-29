@@ -16,8 +16,6 @@
  */
 package com.apzda.cloud.uc.security;
 
-import com.apzda.cloud.config.service.SettingService;
-import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
 import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +27,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 /**
  * @author fengz (windywany@gmail.com)
  * @version 1.0.0
@@ -41,21 +37,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserManager userManager;
 
-    private final UserDetailsMetaRepository userDetailsMetaRepository;
-
     @Override
     @Transactional(readOnly = true, propagation = Propagation.NESTED)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         val user = userManager.getUserByUsername(username);
         val status = user.getStatus();
 
-        return userDetailsMetaRepository.create(User.withUsername(user.getUsername())
+        return User.withUsername(user.getUsername())
             .accountLocked(status == UserStatus.LOCKED)
             .accountExpired(status == UserStatus.EXPIRED)
             .disabled(!(status == UserStatus.ACTIVATED || status == UserStatus.PENDING))
             .credentialsExpired(userManager.isCredentialsExpired(user))
             .password(user.getPasswd())
-            .build());
+            .build();
     }
 
 }

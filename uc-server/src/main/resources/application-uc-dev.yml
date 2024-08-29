@@ -10,31 +10,10 @@ spring:
     url: jdbc:mysql://localhost:3307/apzda_uc_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: root
     password: Abc12332!
-    druid:
-      initial-size: 5
   jpa:
     show-sql: true
-  data:
-    redis:
-      host: localhost
-      database: 1
-      lettuce:
-        pool:
-          enabled: true
 
 logging:
   level:
     com.apzda.cloud: trace
     web: info
-
-apzda:
-  cloud:
-    reference:
-      captchaService:
-        svc-name: http://localhost:38082
-      configService:
-        svc-name: http://localhost:8082
-      auditService:
-        svc-name: http://localhost:38089
-    security:
-      meta-repo: redis

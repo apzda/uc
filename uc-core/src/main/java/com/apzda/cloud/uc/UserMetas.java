@@ -22,5 +22,21 @@ package com.apzda.cloud.uc;
  * @since 1.0.0
  **/
 public interface UserMetas {
+
+    String CURRENT_TENANT_ID = "CUR_TENANT_ID";
+
     String CURRENT_ORG_ID = "CUR_ORG_ID";
+
+    String CURRENT_DEPT_ID = "CUR_DEPT_ID";
+
+    String CURRENT_JOB_ID = "CUR_JOB_ID";
+
+    String CURRENT_THEME_ID = "THEME";
+
+    String TIMEZONE_KEY = "TIMEZONE";
+
+    String RUNNING_AS = "running_as";
+
+    String RUNNING_GT = "running_gt";
+
 }

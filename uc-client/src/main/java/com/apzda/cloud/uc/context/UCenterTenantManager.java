@@ -17,9 +17,9 @@
 package com.apzda.cloud.uc.context;
 
 import com.apzda.cloud.gsvc.context.TenantManager;
-import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMeta;
 import com.apzda.cloud.uc.UserMetas;
+import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -33,19 +33,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
  **/
 @RequiredArgsConstructor
 public class UCenterTenantManager extends TenantManager<String> {
+
     @Override
     @NonNull
     protected String[] getTenantIds() {
         val authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof JwtAuthenticationToken token && token.isAuthenticated()) {
-            val principal = token.getPrincipal();
+        if (authentication != null && authentication.isAuthenticated()) {
+            val principal = authentication.getPrincipal();
             if (principal instanceof UserDetailsMeta userDetailsMeta) {
-                val currentOrgId = userDetailsMeta.get(UserMetas.CURRENT_ORG_ID, authentication, "");
-                if (StringUtils.isNotBlank(currentOrgId)) {
-                    return new String[]{currentOrgId};
+                val currentTenantId = userDetailsMeta.cached(UserMetas.CURRENT_TENANT_ID, authentication);
+                if (StringUtils.isNotBlank(currentTenantId)) {
+                    return Splitter.on(",")
+                        .trimResults()
+                        .omitEmptyStrings()
+                        .splitToList(currentTenantId)
+                        .toArray(new String[] {});
                 }
             }
         }
-        return new String[]{null};
+        return new String[] { null };
     }
+
 }

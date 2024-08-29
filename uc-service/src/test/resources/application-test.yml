@@ -13,6 +13,8 @@ spring:
     password: Abc12332!
   flyway:
     enabled: true
+    out-of-order: true
+    validate-on-migrate: false
   data:
     redis:
       database: 15
@@ -24,9 +26,35 @@ spring:
     hibernate:
       ddl-auto: validate
 
+apzda:
+  ucenter:
+    security:
+      roles:
+        unit-test:
+          name: Test Role
+          description: For Unit Test
+      resources:
+        test:
+          name: Unit Test
+          privileges:
+            "[*:test.*]":
+              name: TestFullyAccess
+            "[r:test.*]":
+              name: TestReadOnlyAccess
+          children:
+            child1:
+              name: Child 1
+              children:
+                child1-1:
+                  name: Child 1 -1
+            child2:
+              name: Child 2
+        test1:
+          name: Test1
 logging:
   level:
-    com.apzda.cloud: trace
+    com.apzda.cloud: debug
+    org.hibernate.orm.jdbc.bind: trace
     web: info
     sql: info
   pattern:

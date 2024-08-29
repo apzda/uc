@@ -1,7 +1,9 @@
-INSERT INTO uc_user_meta (id, created_at, created_by, updated_at, updated_by, deleted, type, uid, name, value, remark)
-VALUES (1, 0, '0', 0, '0', false, 'S', 1, 'test', 'test string', null);
-INSERT INTO uc_user_meta (id, created_at, created_by, updated_at, updated_by, deleted, type, uid, name, value, remark)
-VALUES (2, 0, '0', 0, '0', false, 'I', 1, 'int', '1', null);
+INSERT INTO uc_user_meta (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, type, uid, name,
+                          value, remark)
+VALUES (1, 0, '0', 0, '0', 0, false, 'S', 1, 'test', 'test string', null);
+INSERT INTO uc_user_meta (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, type, uid, name,
+                          value, remark)
+VALUES (2, 0, '0', 0, '0', 0, false, 'I', 1, 'int', '1', null);
 
 INSERT INTO uc_user_role (id, created_at, created_by, updated_at, updated_by, deleted, tenant_id, uid, role_id)
 VALUES (2, 1218153600, '1', 1218153600, '1', false, 0, 1, 2);
@@ -35,3 +37,4 @@ VALUES (3, 1218153600, '1', 11218153600, '1', 0, false, 'All Privileges', 'core'
 INSERT INTO uc_role_privilege (id, created_at, created_by, updated_at, updated_by, tenant_id, deleted, role_id,
                                privilege_id)
 VALUES (4, 1218153600, '1', 1218153600, '1', 1, false, 4, 3);
+

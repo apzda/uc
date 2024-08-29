@@ -16,14 +16,13 @@
  */
 package com.apzda.cloud.uc.security.filter;
 
-import com.apzda.cloud.gsvc.security.authentication.DeviceAwareAuthenticationProcessingFilter;
+import com.apzda.cloud.gsvc.security.filter.AbstractProcessingFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,11 +38,11 @@ import java.io.IOException;
  * @since 1.0.0
  **/
 @Slf4j
-public class UsernameAndPasswordFilter extends DeviceAwareAuthenticationProcessingFilter {
+public class UsernameAndPasswordFilter extends AbstractProcessingFilter {
 
-    public UsernameAndPasswordFilter(String url, AuthenticationManager authenticationManager) {
-        super(new AntPathRequestMatcher(url, "POST"), authenticationManager);
-        log.debug("用户名/密码登录: POST({})", url);
+    public UsernameAndPasswordFilter(String endpoint) {
+        super(new AntPathRequestMatcher(endpoint, "POST"));
+        log.debug("用户名/密码登录处理器: POST({})", endpoint);
     }
 
     @Override
@@ -63,9 +62,9 @@ public class UsernameAndPasswordFilter extends DeviceAwareAuthenticationProcessi
     @Data
     static class UsernameAndPassword {
 
-        private String password;// 用户名
+        private String password;// 密码/凭证
 
-        private String username;// 密码
+        private String username;// 用户名
 
     }
 

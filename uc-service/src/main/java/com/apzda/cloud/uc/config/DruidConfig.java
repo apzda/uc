@@ -21,7 +21,7 @@ public class DruidConfig {
         // 获取common.js内容
         final String text = ResourceUtil.readUtf8Str("support/http/resources/js/common.js");
         // 屏蔽 this.buildFooter(); 直接替换为空字符串,让js没机会调用
-        final String newJs = text.replace("this.buildFooter();", "");
+        final String newJs = text.replace("this.buildFooter()", "");
 
         FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
         registration.addUrlPatterns(StringUtils.stripEnd(pattern, "*") + "js/common.js");

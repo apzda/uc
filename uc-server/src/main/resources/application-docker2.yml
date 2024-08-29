@@ -1,0 +1,26 @@
+spring:
+  data:
+    redis:
+      host: redis
+      password: ENC(3vvXn4GcNJjZDeFRI2l/AyVoEtsRGT9G2ItRiGKphyku/UfCYG6yJIsDzyYMYT2f)
+  datasource:
+    url: jdbc:mysql://mysql:3306/ucenter_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: ENC(zhz9Pq6OSAfkR5+YWNmDjgEMYoJQsjAug5yImBlDHUolMclqhy3ewErhv2jiAfEk)
+    password: ENC(AcKOmdl854DMx+sFH/90OXCIBmd60DY5DcgBE8qenDIgGpFbIoBG+n1rGz6Mhwkq)
+apzda:
+  cloud:
+    registry:
+      type: docker
+      name-style: kebab
+    reference:
+      config-service:
+        svc-name: gtw
+      audit-service:
+        svc-name: gtw
+      captcha-service:
+        svc-name: gtw
+logging:
+  level:
+    com.apzda.cloud: debug
+  pattern:
+    console: "%d{\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\"} [%thread] %level %logger{64}:%L - %X{tid} - %msg%n"

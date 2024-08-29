@@ -1,11 +1,8 @@
 package com.apzda.cloud.uc.context;
 
-import com.apzda.cloud.gsvc.dto.CurrentUser;
-import com.apzda.cloud.gsvc.ext.GsvcExt;
 import com.apzda.cloud.gsvc.security.config.GsvcSecurityAutoConfiguration;
 import com.apzda.cloud.uc.TestApp;
-import com.apzda.cloud.uc.autoconfig.UCenterAutoConfiguration;
-import com.apzda.cloud.uc.mapper.CurrentUserMapper;
+import com.apzda.cloud.uc.autoconfig.UcClientAutoConfiguration;
 import com.apzda.cloud.uc.proto.Request;
 import com.apzda.cloud.uc.proto.UcenterService;
 import com.apzda.cloud.uc.proto.UserInfo;
@@ -32,16 +29,13 @@ import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @ContextConfiguration(classes = TestApp.class)
-@ImportAutoConfiguration({ UCenterAutoConfiguration.class, GsvcSecurityAutoConfiguration.class,
+@ImportAutoConfiguration({ UcClientAutoConfiguration.class, GsvcSecurityAutoConfiguration.class,
         SecurityAutoConfiguration.class })
 @ActiveProfiles("test")
 class UCenterTenantManagerTest {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private CurrentUserMapper currentUserMapper;
 
     @MockBean
     private UcenterService ucenterService;
@@ -67,36 +61,6 @@ class UCenterTenantManagerTest {
         assertThat(user).isNotNull();
         assertThat(user.getUsername()).isEqualTo("gsvc");
         // assertThat(user.getAuthorities().size()).isEqualTo(1);
-    }
-
-    @Test
-    void msg_2_dto_should_be_ok() {
-        // given
-        val builder = GsvcExt.CurrentUser.newBuilder();
-        builder.setUid("123");
-        builder.setApp("gsvc");
-        // when
-        val user = currentUserMapper.from(builder.build());
-
-        // then
-        assertThat(user.getUid()).isEqualTo("123");
-        assertThat(user.getApp()).isEqualTo("gsvc");
-        assertThat(user.getDevice()).isNull();
-    }
-
-    @Test
-    void dto_2_msg_should_be_ok() {
-        // given
-        val builder = CurrentUser.builder();
-        builder.uid("123");
-        builder.app("gsvc");
-        // when
-        val user = currentUserMapper.from(builder.build());
-
-        // then
-        assertThat(user.getUid()).isEqualTo("123");
-        assertThat(user.getApp()).isEqualTo("gsvc");
-        assertThat(user.hasDevice()).isFalse();
     }
 
 }

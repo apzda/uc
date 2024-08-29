@@ -16,11 +16,21 @@
  */
 package com.apzda.cloud.uc.test;
 
+import com.apzda.cloud.config.autoconfig.ConfigAutoConfiguration;
+import com.apzda.cloud.gsvc.security.userdetails.InMemoryUserDetailsMetaRepository;
+import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaRepository;
+import com.apzda.cloud.gsvc.security.userdetails.UserDetailsMetaService;
+import com.apzda.cloud.test.autoconfig.AutoConfigureGsvcTest;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -33,6 +43,9 @@ import java.time.Duration;
  * @since 1.0.0
  **/
 @SpringBootApplication
+@AutoConfigureGsvcTest
+@AutoConfigureDataRedis
+@ImportAutoConfiguration(ConfigAutoConfiguration.class)
 public class TestApp {
 
     @TestConfiguration(proxyBeanMethods = false)
@@ -55,6 +68,23 @@ public class TestApp {
                 .withStartupTimeout(Duration.ofMinutes(3));
         }
 
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    UserDetailsMetaService userDetailsMetaService() {
+        return userDetails -> {
+            return null;
+        };
+    }
+
+    @Bean
+    UserDetailsMetaRepository userDetailsMetaRepository() {
+        return new InMemoryUserDetailsMetaRepository(userDetailsMetaService(), SimpleGrantedAuthority.class);
     }
 
 }

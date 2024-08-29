@@ -19,6 +19,7 @@ package com.apzda.cloud.uc.security.listener;
 import com.apzda.cloud.gsvc.security.event.AuthenticationCompleteEvent;
 import com.apzda.cloud.gsvc.security.token.JwtAuthenticationToken;
 import com.apzda.cloud.uc.domain.service.UserManager;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
@@ -39,13 +40,13 @@ public class AuthenticationEventListener implements ApplicationListener<Abstract
     private final UserManager userManager;
 
     @Override
-    public void onApplicationEvent(@NonNull AbstractAuthenticationEvent event) {
+    public void onApplicationEvent(@Nonnull AbstractAuthenticationEvent event) {
         if (event instanceof AuthenticationCompleteEvent completeEvent) {
             onComplete(completeEvent);
         }
     }
 
-    void onComplete(@NonNull AuthenticationCompleteEvent event) {
+    protected void onComplete(@NonNull AuthenticationCompleteEvent event) {
         log.debug("Authentication Complete: {}", event.getAuthentication());
         if (event.getAuthentication() instanceof JwtAuthenticationToken token) {
             userManager.createOauthSession(token);

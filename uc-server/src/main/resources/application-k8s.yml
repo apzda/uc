@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: ${nacos.addr:mse-9039dcd0-p.nacos-ans.mse.aliyuncs.com:8848}
+    loadbalancer:
+      nacos:
+        enabled: true
+  data:
+    redis:
+      host: r-uf6shdi37yk8tljqy8pd.redis.rds.aliyuncs.com
+      password: ENC(OATVDT256nwGL/y1Vt6nvsox49xOr91PgSRg9OnvMfZprTbefx8f9zP2GgEuhJtDesKFVr2TUSiyAi3TDJmarg==)
+  datasource:
+    url: jdbc:mysql://rm-uf65u152lwm77e115co.mysql.rds.aliyuncs.com:3306/uc_ucenter_db?characterEncoding=UTF-8&useUnicode=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: ENC(YQWwDrXKaEJUrzVy5uivm0aycXy6GCvGC9JH8ZXJfDc5Rd5rMDBelPaf4/ShDQ1g)
+    password: ENC(RO8FZUYbAZilcfoAIA7EMX9QiWc9Y9pzpfIFd3JWQT+DAoUIDn6Bbi9HjDtkloO2)
+apzda:
+  cloud:
+    registry:
+      type: k8s
+      name-style: kebab
+    reference:
+      config-service:
+        svc-name: gtw
+      audit-service:
+        svc-name: gtw
+      captcha-service:
+        svc-name: gtw
+  ucenter:
+    server:
+      props:
+        issuer: PosPay-SIT
+logging:
+  level:
+    com.apzda.cloud: debug
+  pattern:
+    console: "%d{\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\"} [%thread] %level %logger{64}:%L - %X{tid} - %msg%n"

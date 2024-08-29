@@ -32,15 +32,15 @@ import org.springframework.test.context.ContextConfiguration;
  * @version 1.0.0
  * @since 1.0.0
  **/
+@SpringBootTest
+@ContextConfiguration(classes = TestApp.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableUCenterServer
 @EnableConfigServer
 @EnableAuditServer
 @EnableCaptchaServer
 @EnableJpaRepositories(basePackages = { "com.apzda.cloud.*.domain.repository" })
 @EntityScan("com.apzda.cloud.*.domain.entity")
-@SpringBootTest
-@ContextConfiguration(classes = TestApp.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles({ "test" })
 public class TestBase {
 

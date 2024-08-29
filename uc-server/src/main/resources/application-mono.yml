@@ -1,0 +1,45 @@
+apzda:
+  cloud:
+    modem:
+      key: 0123456789ABHAEQ
+      mode: CBC
+      padding: PKCS7Padding
+      iv: '0807060504030201'
+    sms:
+      default-provider: test
+      test-mode: true
+      providers:
+        - id: test
+          name: 测试
+      templates:
+        login:
+          interval: 60s
+          timeout: 5m
+    captcha:
+      props:
+        test-mode: true
+  ucenter:
+    server:
+      auto-create-account: false
+      props:
+        issuer: UCenter-Dev
+
+spring:
+  cloud:
+    loadbalancer:
+      enabled: false
+  config:
+    import: classpath:/gtw.properties
+  flyway:
+    out-of-order: true
+    validate-on-migrate: false
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    web: debug
+    com.apzda.cloud: trace
+
+server:
+  port: 8085

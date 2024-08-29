@@ -17,16 +17,14 @@
     <dependencies>
         <dependency>
             <groupId>com.apzda.cloud</groupId>
-            <artifactId>uc-i18n</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.apzda.cloud</groupId>
             <artifactId>uc-proto</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

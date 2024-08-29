@@ -17,7 +17,7 @@
 package com.apzda.cloud.uc.token;
 
 import com.apzda.cloud.gsvc.security.token.JwtToken;
-import com.apzda.cloud.uc.vo.Organization;
+import com.apzda.cloud.uc.vo.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +25,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -43,28 +44,58 @@ public class UserToken implements JwtToken, Serializable {
 
     private String name;
 
+    private String runAs;
+
+    private String provider;
+
     private String displayName;
+
+    private String firstName;
+
+    private String lastName;
 
     private String avatar;
 
     private String phone;
 
+    private String phonePrefix;
+
     private String email;
 
     private String status;
+
+    private String timezone;
+
+    private String theme;
+
+    private String lang;
 
     private String accessToken;
 
     private String refreshToken;
 
-    private String orgId;
+    private Long lastLoginTime;
 
-    private String deptId;
+    private String lastLoginIp;
+
+    private Tenant tenant;
+
+    private Organization organization;
+
+    private Department department;
+
+    private Job job;
 
     private String mfa;
 
+    private boolean locked;
+
+    private boolean credentialsExpired;
+
     private List<String> authorities;
 
-    private List<Organization> orgs;
+    private Map<String, Tenant> tenants;
+
+    private List<Role> roles;
 
 }

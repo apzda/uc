@@ -11,14 +11,22 @@
 
     <artifactId>uc-service</artifactId>
 
-    <properties>
-
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.apzda.cloud</groupId>
             <artifactId>uc-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
+            <artifactId>uc-service-proto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
+            <artifactId>uc-proto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
+            <artifactId>uc-domain</artifactId>
         </dependency>
         <!-- apzda services -->
         <dependency>
@@ -37,10 +45,6 @@
         <dependency>
             <groupId>com.apzda.cloud</groupId>
             <artifactId>apzda-cloud-gsvc-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.apzda.cloud</groupId>
-            <artifactId>domain</artifactId>
         </dependency>
         <!-- spring boot -->
         <dependency>
@@ -63,6 +67,16 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.warrenstrange</groupId>
+            <artifactId>googleauth</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
@@ -81,6 +95,11 @@
         <dependency>
             <groupId>com.apzda.cloud</groupId>
             <artifactId>captcha-service</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.apzda.cloud</groupId>
+            <artifactId>apzda-cloud-gsvc-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -130,6 +149,7 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -151,6 +171,11 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
                             <version>0.2.0</version>
+                        </path>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                            <version>${spring-boot.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
