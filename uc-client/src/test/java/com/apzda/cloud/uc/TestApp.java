@@ -3,6 +3,7 @@ package com.apzda.cloud.uc;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.TestPropertySource;
 
 /**
  * @author fengz (windywany@gmail.com)
@@ -16,5 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
         @ComponentScan.Filter(classes = {SpringBootApplication.class, AutoConfiguration.class})
     }
 )
+@TestPropertySource(properties = {"apzda.ucenter.security.auto-sync=false"})
 public class TestApp {
 }

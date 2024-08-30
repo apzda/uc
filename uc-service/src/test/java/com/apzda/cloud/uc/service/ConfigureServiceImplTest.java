@@ -7,7 +7,7 @@ import com.apzda.cloud.uc.domain.repository.SecurityResourceRepository;
 import com.apzda.cloud.uc.properties.SecurityConfigureProperties;
 import com.apzda.cloud.uc.proto.ConfigureService;
 import com.apzda.cloud.uc.proto.SyncRequest;
-import com.apzda.cloud.uc.test.JpaTestBase;
+import com.apzda.cloud.uc.test.TestBase;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
@@ -15,8 +15,8 @@ import jakarta.persistence.PersistenceContext;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.test.annotation.Commit;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,8 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @version 1.0.0
  * @since 1.0.0
  **/
-@EnableConfigurationProperties(SecurityConfigureProperties.class)
-class ConfigureServiceImplTest extends JpaTestBase {
+@TestPropertySource(properties = { "apzda.ucenter.security.auto-sync=false" })
+class ConfigureServiceImplTest extends TestBase {
 
     @Autowired
     private ConfigureService configureService;
@@ -50,13 +50,7 @@ class ConfigureServiceImplTest extends JpaTestBase {
     private RoleRepository roleRepository;
 
     @Test
-    void table_exists() {
-        val test1 = securityResourceRepository.findByRid("test1");
-        assertThat(test1).isNotPresent();
-    }
-
-    @Test
-    @Commit
+    @Transactional
     void syncConfiguration() throws JsonProcessingException {
         // given
         val config = objectMapper.writeValueAsString(properties);

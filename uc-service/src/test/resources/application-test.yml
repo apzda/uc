@@ -22,9 +22,10 @@ spring:
         pool:
           enabled: true
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: validate
+    open-in-view: false
 
 apzda:
   ucenter:
@@ -51,10 +52,12 @@ apzda:
               name: Child 2
         test1:
           name: Test1
+    server:
+      captcha-disabled: true
 logging:
   level:
-    com.apzda.cloud: debug
-    org.hibernate.orm.jdbc.bind: trace
+    com.apzda.cloud: info
+    com.apzda.cloud.gsvc: info
     web: info
     sql: info
   pattern:

@@ -20,10 +20,8 @@ import com.apzda.cloud.audit.server.EnableAuditServer;
 import com.apzda.cloud.captcha.server.EnableCaptchaServer;
 import com.apzda.cloud.config.server.EnableConfigServer;
 import com.apzda.cloud.uc.server.EnableUCenterServer;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -39,8 +37,6 @@ import org.springframework.test.context.ContextConfiguration;
 @EnableConfigServer
 @EnableAuditServer
 @EnableCaptchaServer
-@EnableJpaRepositories(basePackages = { "com.apzda.cloud.*.domain.repository" })
-@EntityScan("com.apzda.cloud.*.domain.entity")
 @ActiveProfiles({ "test" })
 public class TestBase {
 

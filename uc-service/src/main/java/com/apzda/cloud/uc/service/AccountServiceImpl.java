@@ -64,7 +64,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.apzda.cloud.uc.ErrorCode.*;
-import static com.apzda.cloud.uc.domain.service.UserManagerImpl.handleOccupiedError;
+import static com.apzda.cloud.uc.domain.UserManagerImpl.handleOccupiedError;
 
 /**
  * @author fengz (windywany@gmail.com)

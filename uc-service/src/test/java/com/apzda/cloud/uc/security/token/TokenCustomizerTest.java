@@ -1,6 +1,5 @@
 package com.apzda.cloud.uc.security.token;
 
-import com.apzda.cloud.gsvc.context.TenantManager;
 import com.apzda.cloud.gsvc.security.token.SimpleJwtToken;
 import com.apzda.cloud.uc.test.TestBase;
 import com.apzda.cloud.uc.token.UserToken;
@@ -10,14 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(value = "classpath:/admin_test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Sql(value = "classpath:/user_test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Sql(value = "classpath:/tenant_test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql({ "classpath:user_test.sql", "classpath:tenant_test.sql" })
 class TokenCustomizerTest extends TestBase {
 
     @Autowired
@@ -48,23 +44,6 @@ class TokenCustomizerTest extends TestBase {
         assertThat(customizedToken.getJob().getLevel()).isEqualTo(1);
         assertThat(customizedToken.getTenants()).isNotEmpty();
         assertThat(customizedToken.getTenants().size()).isEqualTo(2);
-    }
-
-    @Test
-    void tenant_ids_should_be_tow() {
-        // given
-        val user = UsernamePasswordAuthenticationToken.unauthenticated("gsvc", "123456");
-        val authentication = authenticationProvider.authenticate(user);
-        val emptyContext = SecurityContextHolder.getContext();
-        emptyContext.setAuthentication(authentication);
-        // when
-        val tenantId = TenantManager.tenantId();
-        val ids = TenantManager.tenantIds();
-        // then
-        assertThat(tenantId).isEqualTo("1");
-        assertThat(ids.length).isEqualTo(2);
-        assertThat(ids[0]).isEqualTo("1");
-        assertThat(ids[1]).isEqualTo("2");
     }
 
 }

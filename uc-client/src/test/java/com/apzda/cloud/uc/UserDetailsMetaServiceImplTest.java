@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.Collection;
 
@@ -27,9 +28,12 @@ import static org.mockito.BDDMockito.given;
  **/
 @JsonTest
 @ActiveProfiles("test")
+@TestPropertySource(properties = { "apzda.ucenter.security.auto-sync=false" })
 class UserDetailsMetaServiceImplTest {
+
     @MockBean
     private UcenterService ucenterService;
+
     @MockBean
     private IServiceCaller serviceCaller;
 
@@ -44,7 +48,12 @@ class UserDetailsMetaServiceImplTest {
         val user = User.withUsername("test").password("123").authorities("aaa").build();
 
         val builder = UserMetaResp.newBuilder();
-        builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.OBJECT).setName("whatever").setValue(objectMapper.writeValueAsString(cu)).build());
+        builder.setErrCode(0)
+            .addMeta(UserMeta.newBuilder()
+                .setType(MetaValueType.OBJECT)
+                .setName("whatever")
+                .setValue(objectMapper.writeValueAsString(cu))
+                .build());
         given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
         val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
@@ -63,7 +72,9 @@ class UserDetailsMetaServiceImplTest {
         val user = User.withUsername("test").password("123").authorities("aaa").build();
 
         val builder = UserMetaResp.newBuilder();
-        builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.STRING).setName("whatever").setValue("string").build());
+        builder.setErrCode(0)
+            .addMeta(
+                    UserMeta.newBuilder().setType(MetaValueType.STRING).setName("whatever").setValue("string").build());
         given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
         val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
@@ -82,7 +93,8 @@ class UserDetailsMetaServiceImplTest {
         val user = User.withUsername("test").password("123").authorities("aaa").build();
 
         val builder = UserMetaResp.newBuilder();
-        builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.LONG).setName("whatever").setValue("1000").build());
+        builder.setErrCode(0)
+            .addMeta(UserMeta.newBuilder().setType(MetaValueType.LONG).setName("whatever").setValue("1000").build());
         given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
         val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
@@ -95,14 +107,14 @@ class UserDetailsMetaServiceImplTest {
         assertThat(value.get()).isEqualTo(1000L);
     }
 
-
     @Test
     void get_string_metas_should_be_ok() {
         // given
         val user = User.withUsername("test").password("123").authorities("aaa").build();
 
         val builder = UserMetaResp.newBuilder();
-        builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.STRING).setName("whatever").setValue("1000").build());
+        builder.setErrCode(0)
+            .addMeta(UserMeta.newBuilder().setType(MetaValueType.STRING).setName("whatever").setValue("1000").build());
         given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
         val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
@@ -117,7 +129,7 @@ class UserDetailsMetaServiceImplTest {
         assertThat(value.isPresent()).isTrue();
         val longs = value.get();
         assertThat(longs).isNotEmpty();
-        assertThat(longs.toArray(new String[]{})[0]).isEqualTo("1000");
+        assertThat(longs.toArray(new String[] {})[0]).isEqualTo("1000");
     }
 
     @Test
@@ -126,7 +138,8 @@ class UserDetailsMetaServiceImplTest {
         val user = User.withUsername("test").password("123").authorities("aaa").build();
 
         val builder = UserMetaResp.newBuilder();
-        builder.setErrCode(0).addMeta(UserMeta.newBuilder().setType(MetaValueType.LONG).setName("whatever").setValue("1000").build());
+        builder.setErrCode(0)
+            .addMeta(UserMeta.newBuilder().setType(MetaValueType.LONG).setName("whatever").setValue("1000").build());
         given(ucenterService.getMetas(any(Request.class))).willReturn(builder.build());
 
         val userDetailsMetaService = new UserDetailsMetaServiceImpl(ucenterService, objectMapper);
@@ -141,8 +154,7 @@ class UserDetailsMetaServiceImplTest {
         assertThat(value.isPresent()).isTrue();
         val longs = value.get();
         assertThat(longs).isNotEmpty();
-        assertThat(longs.toArray(new Long[]{})[0]).isEqualTo(1000L);
+        assertThat(longs.toArray(new Long[] {})[0]).isEqualTo(1000L);
     }
-
 
 }

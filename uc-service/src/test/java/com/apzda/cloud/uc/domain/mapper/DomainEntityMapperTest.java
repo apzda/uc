@@ -4,16 +4,11 @@ import com.apzda.cloud.uc.domain.entity.User;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import com.apzda.cloud.uc.domain.vo.MetaType;
 import com.apzda.cloud.uc.proto.MetaValueType;
-import com.apzda.cloud.uc.test.TestApp;
+import com.apzda.cloud.uc.test.TestBase;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.JsonTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
@@ -25,12 +20,7 @@ import static org.mockito.Mockito.when;
  * @version 1.0.0
  * @since 1.0.0
  **/
-@JsonTest
-@ContextConfiguration(classes = TestApp.class)
-@TestPropertySource(properties = { "skip.container=yes" })
-@ComponentScan("com.apzda.cloud.uc.domain.mapper")
-@ActiveProfiles("test")
-class DomainEntityMapperTest {
+class DomainEntityMapperTest extends TestBase {
 
     @Autowired
     private DomainEntityMapper domainEntityMapper;

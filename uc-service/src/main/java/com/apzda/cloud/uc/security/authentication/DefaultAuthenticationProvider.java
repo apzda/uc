@@ -34,6 +34,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Objects;
 
@@ -54,6 +55,8 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider, Ap
 
     private final TempStorage tempStorage;
 
+    private TransactionTemplate transactionTemplate;
+
     private ApplicationContext applicationContext;
 
     private UCenterConfigProperties properties;
@@ -62,6 +65,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider, Ap
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
         this.properties = this.applicationContext.getBean(UCenterConfigProperties.class);
+        this.transactionTemplate = this.applicationContext.getBean(TransactionTemplate.class);
     }
 
     @Override
@@ -113,6 +117,15 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider, Ap
                     val tenantRepository = applicationContext.getBean(TenantRepository.class);
                     val tenant = tenantRepository.getByDomain(domain);
                     tenant.ifPresent(value -> userDetailsMeta.set(UserMetas.CURRENT_TENANT_ID, authed, value.getId()));
+                }
+                else {
+                    transactionTemplate.execute((status) -> {
+                        val user = userManager.getUserByUsernameAndProvider(username, provider);
+                        val meta = user.getMeta(UserMetas.CURRENT_TENANT_ID);
+                        meta.ifPresent(
+                                value -> userDetailsMeta.set(UserMetas.CURRENT_TENANT_ID, authed, value.getValue()));
+                        return true;
+                    });
                 }
 
                 data.setErrorCnt(0);

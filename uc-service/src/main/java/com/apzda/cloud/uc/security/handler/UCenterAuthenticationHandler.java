@@ -64,19 +64,18 @@ public class UCenterAuthenticationHandler extends DefaultAuthenticationHandler {
     @AuditLog(activity = "logout", message = "logout successfully")
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
-        if (authentication == null) {
-            return;
-        }
 
-        val name = authentication.getName();
-        AuditContextHolder.getContext().setUsername(name);
+        if (authentication != null) {
+            val name = authentication.getName();
+            AuditContextHolder.getContext().setUsername(name);
 
-        if (StringUtils.isNotBlank(tokenName)) {
-            GsvcContextHolder.headers().remove(tokenName);
-        }
+            if (StringUtils.isNotBlank(tokenName)) {
+                GsvcContextHolder.headers().remove(tokenName);
+            }
 
-        if (this.applicationEventPublisher != null) {
-            this.applicationEventPublisher.publishEvent(new AccountEvent(name, EventType.LOGOUT));
+            if (this.applicationEventPublisher != null) {
+                this.applicationEventPublisher.publishEvent(new AccountEvent(name, EventType.LOGOUT));
+            }
         }
 
         super.onLogoutSuccess(request, response, authentication);

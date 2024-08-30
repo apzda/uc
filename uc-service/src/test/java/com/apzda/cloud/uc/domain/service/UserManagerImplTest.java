@@ -2,13 +2,15 @@ package com.apzda.cloud.uc.domain.service;
 
 import com.apzda.cloud.uc.proto.CreateAccountRequest;
 import com.apzda.cloud.uc.proto.UpdateAccountRequest;
-import com.apzda.cloud.uc.test.JpaTestBase;
+import com.apzda.cloud.uc.test.TestBase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @version 1.0.0
  * @since 1.0.0
  **/
-
-class UserManagerImplTest extends JpaTestBase {
+@Transactional
+class UserManagerImplTest extends TestBase {
 
     @Autowired
     private UserManager userManager;

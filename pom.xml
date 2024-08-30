@@ -101,7 +101,7 @@
             </releases>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <updatePolicy>interval:15</updatePolicy>
                 <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </repository>

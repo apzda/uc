@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @version 1.0.0
  * @since 1.0.0
  **/
+@Transactional
 class DefaultAuthenticationProviderTest extends TestBase {
 
     @Autowired
@@ -56,7 +58,7 @@ class DefaultAuthenticationProviderTest extends TestBase {
         assertThat(oauth.get().getLastDevice()).isEqualTo("pc");
 
         // given
-        val jwtToken = SimpleJwtToken.builder().accessToken("123").build();
+        val jwtToken = SimpleJwtToken.builder().accessToken("123").provider(Oauth.SIMPLE).build();
         ((JwtAuthenticationToken) authed).setJwtToken(jwtToken);
         val event = new AuthenticationCompleteEvent(authed, jwtToken);
         // when

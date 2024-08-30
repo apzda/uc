@@ -24,7 +24,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -38,7 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserManager userManager;
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.NESTED)
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         val user = userManager.getUserByUsername(username);
         val status = user.getStatus();

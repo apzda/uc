@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.apzda.cloud.uc.domain.service;
+package com.apzda.cloud.uc.domain;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.DateUtil;
@@ -36,6 +36,7 @@ import com.apzda.cloud.uc.domain.entity.Role;
 import com.apzda.cloud.uc.domain.entity.UserMeta;
 import com.apzda.cloud.uc.domain.entity.*;
 import com.apzda.cloud.uc.domain.repository.*;
+import com.apzda.cloud.uc.domain.service.UserManager;
 import com.apzda.cloud.uc.domain.vo.Gender;
 import com.apzda.cloud.uc.domain.vo.MetaType;
 import com.apzda.cloud.uc.domain.vo.UserStatus;
@@ -163,6 +164,7 @@ public class UserManagerImpl implements UserManager, ApplicationEventPublisherAw
     }
 
     @Override
+    @Transactional
     public void setupUserCredentialsExpired(User user, Integer timeout) {
         try {
             val setting = settingService.load(UcSetting.class);

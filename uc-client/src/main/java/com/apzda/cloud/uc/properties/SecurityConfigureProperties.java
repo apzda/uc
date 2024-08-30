@@ -17,6 +17,7 @@
 package com.apzda.cloud.uc.properties;
 
 import com.apzda.cloud.uc.resource.ResourceIdExplorer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -35,6 +36,9 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "apzda.ucenter.security")
 @Data
 public class SecurityConfigureProperties {
+
+    @JsonIgnore
+    private boolean autoSync = true;
 
     private Map<String, Resource> resources = new HashMap<>();
 

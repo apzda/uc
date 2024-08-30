@@ -1,13 +1,16 @@
 package com.apzda.cloud.uc.service;
 
+import com.apzda.cloud.gsvc.exception.GsvcException;
 import com.apzda.cloud.uc.proto.*;
-import com.apzda.cloud.uc.test.JpaTestBase;
+import com.apzda.cloud.uc.test.TestBase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @version 1.0.0
  * @since 1.0.0
  **/
-class PrivilegeServiceImplTest extends JpaTestBase {
+@Transactional
+@WithMockUser(authorities = { "*:privilege" })
+class PrivilegeServiceImplTest extends TestBase {
 
     @Autowired
     private PrivilegeService privilegeService;
@@ -104,7 +109,7 @@ class PrivilegeServiceImplTest extends JpaTestBase {
             val d2 = PrivilegeId.newBuilder().setId("1").build();
             // when
             val res7 = privilegeService.delete(d2);
-        }).isInstanceOf(AccessDeniedException.class);
+        }).isInstanceOf(GsvcException.class);
     }
 
     @Test

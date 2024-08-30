@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @EnableMethodSecurity
 @EnableGsvcServices({ UcenterService.class, ConfigureService.class })
 @ComponentScan("com.apzda.cloud.uc.mapper")
+@EnableConfigurationProperties(SecurityConfigureProperties.class)
 @Slf4j
 public class UcClientAutoConfiguration {
 
@@ -77,7 +79,8 @@ public class UcClientAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @EnableConfigurationProperties(SecurityConfigureProperties.class)
+    @ConditionalOnProperty(prefix = "apzda.ucenter.security", name = "auto-sync", havingValue = "true",
+            matchIfMissing = true)
     @Slf4j
     static class SecurityConfigureSyncer implements SmartLifecycle {
 
@@ -101,14 +104,21 @@ public class UcClientAutoConfiguration {
             if (!running) {
                 running = true;
                 try {
+                    if (properties.getResources().size() + properties.getRoles().size()
+                            + properties.getPrivileges().size() == 0) {
+                        return;
+                    }
+
                     if (log.isDebugEnabled()) {
                         log.debug("Starting sync security configuration - Resources: {}, Roles: {}, Privileges: {}",
                                 properties.getResources().size(), properties.getRoles().size(),
                                 properties.getPrivileges().size());
                     }
+
                     val request = SyncRequest.newBuilder()
                         .setConfiguration(objectMapper.writeValueAsString(properties))
                         .build();
+
                     val response = configureService.syncConfiguration(request);
                     if (response.getErrCode() != 0) {
                         throw new Exception(response.getErrMsg());
