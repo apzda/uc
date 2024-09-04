@@ -7,8 +7,7 @@
     <parent>
         <artifactId>apzda-cloud-gsvc-parent</artifactId>
         <groupId>com.apzda.cloud</groupId>
-        <version>1.2.20-SNAPSHOT</version>
-        <relativePath/>
+        <version>1.2.20</version>
     </parent>
 
     <artifactId>uc</artifactId>
@@ -19,10 +18,7 @@
     <url>https://docs.apzda.com/ucenter</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <apzda.bom.version>1.0.5-SNAPSHOT</apzda.bom.version>
-
+        <apzda.bom.version>1.0.5</apzda.bom.version>
         <googleauth.version>1.5.0</googleauth.version>
         <wx.java.version>4.6.0</wx.java.version>
     </properties>
